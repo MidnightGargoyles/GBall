@@ -21,8 +21,10 @@ public class Client {
 	private PacketListner listener;
 	public Client() {
 		try {
+			System.out.println("foo");
 			address = InetAddress.getByName("localhost");
 			socket = new DatagramSocket();
+			System.out.println(socket.getLocalPort());
 			sender = new PacketSender(socket, address, server_port);
 			listener = new PacketListner(socket);
 		} catch (UnknownHostException e) {
@@ -39,7 +41,7 @@ public class Client {
 	}
 	
 	public static void main(String [] args) {
-		//JOptionPane.show
+		StartupDialog d = new StartupDialog("HAI", "foo");
 		Client c = new Client();
 		c.run();
 		System.out.println("wat");
@@ -55,7 +57,7 @@ public class Client {
 		System.out.println("AUTH");
 		
 		System.out.println(socket.getPort());
-		Connection c = new Connection(socket.getInetAddress(), socket.getPort());
+		Connection c = new Connection(socket.getInetAddress(), socket.getLocalPort());
 		sender.addMessage(c);
 		MsgData d;
 		while((d = listener.getNextMsg()) == null) {
