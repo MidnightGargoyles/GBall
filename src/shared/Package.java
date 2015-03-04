@@ -11,5 +11,7 @@ public class Package extends MsgData {
 	}
 	
 	
-	
+	public MsgData[] getPastMessages() {
+		return pastMessages;
+	}
 }

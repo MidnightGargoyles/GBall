@@ -21,6 +21,11 @@ public class PacketSender extends Thread {
 		start();
 	}
 	
+	public PacketSender(DatagramSocket socket, InetAddress address, int port, String threadName) {
+		this(socket, address, port);
+		setName(threadName);
+	}
+	
 	public void run() {
 		while(alive.get()) {
 			

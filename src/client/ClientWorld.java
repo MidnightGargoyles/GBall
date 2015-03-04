@@ -1,4 +1,4 @@
-package GBall;
+package client;
 
 import java.awt.event.*;
 import java.io.ByteArrayOutputStream;
@@ -8,27 +8,35 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 
+import GBall.Const;
+import GBall.EntityManager;
+import GBall.GameWindow;
+import GBall.KeyConfig;
+import GBall.Vector2D;
 import shared.MsgData;
+import shared.PacketListner;
+import shared.PacketSender;
 
-public class World {
-
-	public static final String SERVERIP = "127.0.0.1"; // 'Within' the emulator!
-	public static final int SERVERPORT = 4444;
-
+public class ClientWorld {
+	private PacketListner listener;
+	private PacketSender sender;
+	
 	private static class WorldSingletonHolder {
-		public static final World instance = new World();
+		public static final ClientWorld instance = new ClientWorld();
 	}
 
-	public static World getInstance() {
+	public static ClientWorld getInstance() {
 		return WorldSingletonHolder.instance;
 	}
-	private EntityManager entManager;
+
 	private double m_lastTime = System.currentTimeMillis();
 	private double m_actualFps = 0.0;
 
-
-	private World() {
+	private final GameWindow m_gameWindow;
+	private EntityManager entManager;
+	private ClientWorld() {
 		entManager = new EntityManager();
+		m_gameWindow = new GameWindow(entManager);
 	}
 
 	public void process() {
@@ -55,14 +63,10 @@ public class World {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}*/
-
 		while (true) {
 			if (newFrame()) {
-				entManager.updatePositions();
-				entManager.checkBorderCollisions(
-						Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
-				entManager.checkShipCollisions();
-				//m_gameWindow.repaint();
+				// TODO: Get State /Send input
+				m_gameWindow.repaint();
 			}
 		}
 	}
@@ -132,7 +136,12 @@ public class World {
 	}
 
 	public void addKeyListener(KeyListener k) {
-		//m_gameWindow.addKeyListener(k);
+		m_gameWindow.addKeyListener(k);
+	}
+	
+	public void feed(PacketListner listener, PacketSender sender) {
+		this.listener = listener;
+		this.sender = sender;
 	}
 
 }

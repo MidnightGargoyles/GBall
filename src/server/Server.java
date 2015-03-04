@@ -19,14 +19,14 @@ public class Server extends Thread {
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
-
+	private int msgCounter = 0;
 	public Server() {
 		try {
 			socket = new DatagramSocket(Client.server_port);
 		} catch (SocketException e) {
 			e.printStackTrace();
 		}
-		listener = new PacketListner(socket);
+		listener = new PacketListner(socket, "Server_Listener");
 		start();
 	}
 
@@ -34,14 +34,14 @@ public class Server extends Thread {
 		while (true) {
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
-				if (data.getType() == MsgData.CONNECTION) {
-					Connection req = (Connection) data;
-					System.out.println("YAY");
-					Connection c = new Connection(0, true);
-					PacketSender ps = new PacketSender(socket,
-							req.getAddress(), req.getPort());
-					clients.add(ps);
-					ps.addMessage(c);
+				switch(data.getType()) {
+				case MsgData.CONNECTION:
+					handleConnectionRequest(data);
+					break;
+				case MsgData.PACKAGE:
+					break;
+				case MsgData.INPUT:
+					break;
 				}
 			}
 			// TODO proccess all incoming
@@ -67,6 +67,16 @@ public class Server extends Thread {
 		 * } catch (IOException e) { // TODO Auto-generated catch block
 		 * e.printStackTrace(); }
 		 */
+	}
+	
+	private void handleConnectionRequest(MsgData data) {
+		Connection req = (Connection) data;
+		System.out.println("YAY");
+		Connection c = new Connection(0, true);
+		PacketSender ps = new PacketSender(socket,
+				req.getAddress(), req.getPort(), "Server_Sender_" + req.getAddress());
+		clients.add(ps);
+		ps.addMessage(c);
 	}
 
 }

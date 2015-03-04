@@ -12,13 +12,13 @@ public class GameWindow extends Frame implements WindowListener {
 	// private Image background;
 	private Image offScreenImage;
 	private Graphics offScreenGraphicsCtx; // Used for double buffering
-
+	private EntityManager entManager;
 	// private final static int YOFFSET = 34;
 	// private final static int XOFFSET = 4;
 
-	public GameWindow() {
+	public GameWindow(EntityManager entManager) {
 		addWindowListener(this);
-
+		this.entManager = entManager;
 		setSize(Const.DISPLAY_WIDTH, Const.DISPLAY_HEIGHT);
 		setTitle(Const.APP_NAME);
 		setVisible(true);
@@ -26,6 +26,7 @@ public class GameWindow extends Frame implements WindowListener {
 
 	@Override
 	public void update(Graphics g) {
+		System.out.println("repaint");
 		if (offScreenGraphicsCtx == null) {
 			offScreenImage = createImage(getSize().width, getSize().height);
 			offScreenGraphicsCtx = offScreenImage.getGraphics();
@@ -33,7 +34,7 @@ public class GameWindow extends Frame implements WindowListener {
 
 		offScreenGraphicsCtx.setColor(Const.BG_COLOR);
 		offScreenGraphicsCtx.fillRect(0, 0, getSize().width, getSize().height);
-		EntityManager.getInstance().renderAll(offScreenGraphicsCtx);
+		entManager.renderAll(offScreenGraphicsCtx);
 		ScoreKeeper.getInstance().render(offScreenGraphicsCtx);
 
 		if (Const.SHOW_FPS) {

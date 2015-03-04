@@ -19,62 +19,72 @@ public class Client {
 	public static final int server_port = 25041;
 	private PacketSender sender;
 	private PacketListner listener;
+	/**
+	 * Creates a client and a server
+	 */
 	public Client() {
+		this("localhost");
+		Server s = new Server();
+	}
+
+	/**
+	 * Creates a client that connects to a remote host
+	 * 
+	 * @param hostName
+	 */
+	public Client(String hostName) {
 		try {
-			System.out.println("foo");
-			address = InetAddress.getByName("localhost");
+			address = InetAddress.getByName(hostName);
 			socket = new DatagramSocket();
-			System.out.println(socket.getLocalPort());
-			sender = new PacketSender(socket, address, server_port);
-			listener = new PacketListner(socket);
+			sender = new PacketSender(socket, address, server_port, "Client_Sender");
+			listener = new PacketListner(socket, "Client_Listener");
+			socket.connect(address, server_port);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
+			System.out.println("");
 			e.printStackTrace();
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		Server s = new Server();
-		
-		boolean r = authenticate();
 	}
-	
+
 	public static void main(String [] args) {
 		//StartupDialog d = new StartupDialog("HAI", "foo");
-		StartupDialog.Result result = StartupDialog.showDialog();
-		switch(result.type) {
-		case StartupDialog.Result.CONNECT:
+		Client c;
+		do {
+			StartupDialog.Result result = StartupDialog.showDialog();
+			switch(result.type) {
+			case StartupDialog.Result.CONNECT:
+				c = new Client(result.value);
+				break;
+			case StartupDialog.Result.HOST:
+				c = new Client();
+				break;
+			case StartupDialog.Result.EXIT:
+				return;
+			default:
+				System.out.println("Unknown result type: " + result.type);
+				return;
+			}
 			
-			break;
-		case StartupDialog.Result.HOST:
-			
-			break;
-		case StartupDialog.Result.EXIT:
-			System.exit(0);
-			break;
-		}
-		Client c = new Client();
+		} while(!c.authenticate());
 		c.run();
-		System.out.println("wat");
 	}
-	
+
 	public void run() {
-		while(true) {
-			
-		}
+		ClientWorld.getInstance().feed(listener, sender);
+		ClientWorld.getInstance().process();
 	}
-	
+
 	public boolean authenticate() {
-		System.out.println("AUTH");
-		
-		System.out.println(socket.getPort());
-		Connection c = new Connection(socket.getInetAddress(), socket.getLocalPort());
+		Connection c = new Connection(socket.getInetAddress(),
+				socket.getLocalPort());
 		sender.addMessage(c);
 		MsgData d;
-		while((d = listener.getNextMsg()) == null) {
+		while ((d = listener.getNextMsg()) == null) {
 		}
 		System.out.println("yes");
 		return true;
 	}
+	
+	
 }

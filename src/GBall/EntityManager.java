@@ -6,17 +6,9 @@ import java.util.LinkedList;
 import java.util.ListIterator;
 
 public class EntityManager {
-	private static LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
+	private LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
 
-	private static class SingletonHolder {
-		public static final EntityManager instance = new EntityManager();
-	}
-
-	public static EntityManager getInstance() {
-		return SingletonHolder.instance;
-	}
-
-	private EntityManager() {
+	public EntityManager() {
 	}
 
 	public void addShip(final Vector2D position, final Vector2D speed,
@@ -142,7 +134,7 @@ public class EntityManager {
 		}
 	}
 
-	public static LinkedList<GameEntity> getState() {
+	public LinkedList<GameEntity> getState() {
 
 		return m_entities;
 	}

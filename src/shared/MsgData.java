@@ -1,6 +1,7 @@
 package shared;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class MsgData implements Serializable {
 
@@ -42,15 +43,28 @@ public class MsgData implements Serializable {
 	public static final int SUBFRAME = 1;
 	public static final int CONNECTION = 3;
 	public static final int PACKAGE = 4;
+	public static final int INPUT = 5;
 	
 	protected int type;
+	private Date index;
 	
 	public MsgData(int type) {
 		this.type = type;
+		this.index = new Date();
 	}
 	
 	public int getType() {
 		return type;
 	}
-
+	
+	public boolean greaterThan(MsgData data) {
+		return index.after(data.index);
+	}
+	
+	public boolean lessThan(MsgData data) {
+		return index.before(data.index);
+	}
+	public Date getTimestamp() {
+		return index;
+	}
 }
