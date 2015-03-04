@@ -67,6 +67,12 @@ public class ClientWorld {
 			if (newFrame()) {
 				// TODO: Get State /Send input
 				m_gameWindow.repaint();
+				try {
+					Thread.sleep(1000/60);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 		}
 	}

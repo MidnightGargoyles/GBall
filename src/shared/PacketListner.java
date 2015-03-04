@@ -13,15 +13,26 @@ public class PacketListner extends Thread {
 	private Date latest = null;
 	private DatagramSocket socket;
 	
+	/**
+	 * Creates a PacketListner using the specified socket.
+	 * @param socket - The socket to use.
+	 */
 	public PacketListner(DatagramSocket socket) {
 		this.socket = socket;
 		start();
 	}
 	
+	/**
+	 * Creates a PacketListner using the specified socket and
+	 * using the specified name as the thread name.
+	 * @param socket - The socket to use.
+	 * @param threadName - The name for the thread.
+	 */
 	public PacketListner(DatagramSocket socket, String threadName) {
 		this(socket);
 		setName(threadName);
 	}
+	
 	public void run() {
 		// TODO
 		while(alive.get()) {
@@ -31,9 +42,9 @@ public class PacketListner extends Thread {
 				socket.receive(packet);
 				MsgData msg = Util.unpack(packet.getData());
 				if(msg.getType() == MsgData.PACKAGE) {
-					handlePackage((Package)msg);
+					addIfLegit((Package)msg);
 				} else {
-					messageQueue.add(msg);
+					addIfLegit(msg);
 				}
 				
 				
@@ -43,7 +54,25 @@ public class PacketListner extends Thread {
 		}
 	}
 	
-	private void handlePackage(Package msg) {
+	private void addIfLegit(MsgData msg) {
+		MsgData last = null;
+		for(MsgData m : messageQueue) {
+			last = m;
+		}
+		if(last != null) {
+			if(msg.greaterThan(last)){
+				messageQueue.add(msg);
+			}
+		} else if(latest != null) {
+			if(msg.getTimestamp().after(latest)){
+				messageQueue.add(msg);
+			}
+		} else {
+			messageQueue.add(msg);
+		}
+	}
+	
+	private void addIfLegit(Package msg) {
 		MsgData[] pack =  msg.getPastMessages();
 		
 		MsgData last = null;

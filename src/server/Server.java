@@ -11,15 +11,20 @@ import java.util.ArrayList;
 
 import client.Client;
 import shared.Connection;
+import shared.Input;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
+import shared.Input.KeyState;
 
 public class Server extends Thread {
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
-	private int msgCounter = 0;
+	private Input[] playerInputs = { 
+			new Input(KeyState.OFF), new Input(KeyState.OFF), 
+			new Input(KeyState.OFF), new Input(KeyState.OFF) };
+
 	public Server() {
 		try {
 			socket = new DatagramSocket(Client.server_port);
@@ -34,7 +39,7 @@ public class Server extends Thread {
 		while (true) {
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
-				switch(data.getType()) {
+				switch (data.getType()) {
 				case MsgData.CONNECTION:
 					handleConnectionRequest(data);
 					break;
@@ -49,6 +54,12 @@ public class Server extends Thread {
 			// TODO simulate world
 
 			// TODO send messages
+			try {
+				Thread.sleep(1000/60);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		/*
 		 * try { ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -68,13 +79,13 @@ public class Server extends Thread {
 		 * e.printStackTrace(); }
 		 */
 	}
-	
+
 	private void handleConnectionRequest(MsgData data) {
 		Connection req = (Connection) data;
 		System.out.println("YAY");
 		Connection c = new Connection(0, true);
-		PacketSender ps = new PacketSender(socket,
-				req.getAddress(), req.getPort(), "Server_Sender_" + req.getAddress());
+		PacketSender ps = new PacketSender(socket, req.getAddress(),
+				req.getPort(), "Server_Sender_" + req.getAddress());
 		clients.add(ps);
 		ps.addMessage(c);
 	}

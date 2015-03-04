@@ -43,6 +43,12 @@ public class PacketSender extends Thread {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			try {
+				Thread.sleep(1000/60);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 	
