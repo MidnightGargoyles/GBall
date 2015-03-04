@@ -13,8 +13,16 @@ import javax.swing.JTextField;
 
 public class StartupDialog extends JDialog {
 	private JTextField field;
-
-	public StartupDialog(String title, String message) {
+	
+	public class Result {
+		public static final int CONNECT = 0;
+		public static final int HOST = 1;
+		public static final int EXIT = 2;
+		public int type;
+		public String value;
+	}
+	private Result result = null;
+	private StartupDialog(String title, String message) {
 		super((JFrame) null, title, true);
 
 		/*
@@ -35,7 +43,10 @@ public class StartupDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println(field.getText());
+				result = new Result();
+				result.type = Result.CONNECT;
+				result.value = field.getText();
+				dispose();
 			}
 		});
 		buttonPane.add(button);
@@ -45,7 +56,9 @@ public class StartupDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+				result = new Result();
+				result.type = Result.HOST;
+				dispose();
 			}
 		});
 		buttonPane.add(button2);
@@ -55,8 +68,9 @@ public class StartupDialog extends JDialog {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				System.out.println("bai");
-				System.exit(0);
+				result = new Result();
+				result.type = Result.EXIT;
+				dispose();
 			}
 		});
 		buttonPane.add(button3);
@@ -67,5 +81,11 @@ public class StartupDialog extends JDialog {
 		pack();
 
 		setVisible(true);
+	}
+	
+	public static Result showDialog() {
+		StartupDialog d = new StartupDialog("title", "message?");
+		while(d.result == null);
+		return d.result;
 	}
 }

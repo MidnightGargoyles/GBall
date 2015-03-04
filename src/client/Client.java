@@ -41,7 +41,19 @@ public class Client {
 	}
 	
 	public static void main(String [] args) {
-		StartupDialog d = new StartupDialog("HAI", "foo");
+		//StartupDialog d = new StartupDialog("HAI", "foo");
+		StartupDialog.Result result = StartupDialog.showDialog();
+		switch(result.type) {
+		case StartupDialog.Result.CONNECT:
+			
+			break;
+		case StartupDialog.Result.HOST:
+			
+			break;
+		case StartupDialog.Result.EXIT:
+			System.exit(0);
+			break;
+		}
 		Client c = new Client();
 		c.run();
 		System.out.println("wat");
