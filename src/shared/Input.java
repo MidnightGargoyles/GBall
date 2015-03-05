@@ -51,16 +51,28 @@ public class Input extends MsgData {
 	 * new states if the new states aren't the type <b>NO_CHANGE</b>
 	 * @param newState
 	 */
-	public void update(Input newState) {
+	public boolean update(Input newState) {
+		boolean b = hasChanges(newState);
 		forward = (newState.forward == KeyState.NO_CHANGE) ? forward : newState.forward;
 		left = (newState.left == KeyState.NO_CHANGE) ? left : newState.left;
 		right = (newState.right == KeyState.NO_CHANGE) ? right : newState.right;
+		return b;
 	}
 
-	public boolean similarAs(Input input) {
-		return (forward == input.forward || input.forward == KeyState.NO_CHANGE) &&
-				(left == input.left || input.left == KeyState.NO_CHANGE) && 
-				(right == input.right || input.right == KeyState.NO_CHANGE);
+	/**
+	 * returns true if the newInput has any new developments
+	 * @param newInput
+	 * @return
+	 */
+	public boolean hasChanges(Input newInput) {
+		//System.out.println(forward + " != " + newInput.forward + " && " + newInput.forward + " != " + KeyState.NO_CHANGE);
+		return (forward != newInput.forward && newInput.forward != KeyState.NO_CHANGE) || 
+				(left != newInput.left && newInput.left != KeyState.NO_CHANGE) || 
+				(right != newInput.right && newInput.right != KeyState.NO_CHANGE);
+	}
+	
+	public boolean equals(Input input) {
+		return forward == input.forward && left == input.left && right == input.right;
 	}
 	
 }

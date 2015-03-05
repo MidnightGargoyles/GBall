@@ -71,10 +71,9 @@ public class ClientWorld implements KeyListener {
 		while (true) {
 			if (newFrame()) {
 				// Only add changes to the message queue
-				if(!lastInput.similarAs(currentInput)) {
-					sender.addMessage(new Input());
+				if(lastInput.update(currentInput)) {
+					sender.addMessage(currentInput);
 				}
-				lastInput = currentInput;
 				currentInput = new Input();
 				// TODO: Get State /Send input
 				m_gameWindow.repaint();
@@ -164,7 +163,6 @@ public class ClientWorld implements KeyListener {
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		System.out.println("foo?");
 		try {
 			if (e.getKeyCode() == KeyEvent.VK_D) {
 				currentInput.right = Input.KeyState.ON;

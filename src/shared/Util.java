@@ -11,12 +11,12 @@ import java.net.InetAddress;
 public class Util {
 	public static byte[] pack(MsgData msg) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		System.out.println("packing: "  + msg.toString());
 		ObjectOutputStream oos;
 		try {
 			oos = new ObjectOutputStream(baos);
 			
-			switch(msg.getType()) {
+			/* found that casting weren't necessary
+			 * switch(msg.getType()) {
 			case MsgData.KEYFRAME: 
 				oos.writeObject((Keyframe) msg);
 				break;
@@ -26,15 +26,20 @@ public class Util {
 			case MsgData.CONNECTION: 
 				oos.writeObject((Connection) msg);
 				break;
-			}
+			case MsgData.INPUT:
+				oos.writeObject((Input) msg);
+				break;
+			default:
+				System.err.println("Could not pack this! " + msg);
+				return null;
+			}*/
+			oos.writeObject(msg);
 			oos.flush();
 		} catch (IOException e) {
 			e.printStackTrace();
 			return null;
 		}
-		byte[] bArr = baos.toByteArray();
-		System.out.println(new String(bArr));
-		return bArr;
+		return baos.toByteArray();
 	}
 	
 	public static MsgData unpack(byte[] data) {
