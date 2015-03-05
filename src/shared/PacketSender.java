@@ -7,8 +7,8 @@ import java.net.InetAddress;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PacketSender extends Thread {
-	private AtomicBoolean alive = new AtomicBoolean(true);
+public class PacketSender extends StoppableThread {
+	
 	private ConcurrentLinkedQueue<MsgData> messageQueue = new ConcurrentLinkedQueue<MsgData>();
 	private DatagramSocket socket;
 	private InetAddress address;
@@ -33,6 +33,7 @@ public class PacketSender extends Thread {
 			
 			if (msg == null) continue;
 			System.out.println("Fetching message...");
+			msg.setSource(socket.getLocalAddress());
 			byte[] buf = Util.pack(msg);
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 			

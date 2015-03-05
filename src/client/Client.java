@@ -12,6 +12,7 @@ import shared.Connection;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
+import shared.ThreadManager;
 
 public class Client {
 	private DatagramSocket socket;
@@ -51,6 +52,7 @@ public class Client {
 		//StartupDialog d = new StartupDialog("HAI", "foo");
 		Client c;
 		do {
+			ThreadManager.inst().killAll();
 			StartupDialog.Result result = StartupDialog.showDialog();
 			switch(result.type) {
 			case StartupDialog.Result.CONNECT:
@@ -80,8 +82,11 @@ public class Client {
 				socket.getLocalPort());
 		sender.addMessage(c);
 		MsgData d;
-		while ((d = listener.getNextMsg()) == null) {
+		long start =  System.currentTimeMillis();
+		while ((d = listener.getNextMsg()) == null && listener.isAlive()) {
+			if(start + 5000 < System.currentTimeMillis()) return false;
 		}
+		if(!listener.isAlive()) return false;
 		System.out.println("yes");
 		return true;
 	}

@@ -12,12 +12,14 @@ import java.util.ArrayList;
 import client.Client;
 import shared.Connection;
 import shared.Input;
+import shared.MsgBundle;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
 import shared.Input.KeyState;
+import shared.StoppableThread;
 
-public class Server extends Thread {
+public class Server extends StoppableThread {
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
@@ -36,18 +38,10 @@ public class Server extends Thread {
 	}
 
 	public void run() {
-		while (true) {
+		while (alive.get()) {
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
-				switch (data.getType()) {
-				case MsgData.CONNECTION:
-					handleConnectionRequest(data);
-					break;
-				case MsgData.PACKAGE:
-					break;
-				case MsgData.INPUT:
-					break;
-				}
+				handleMsg(data);
 			}
 			// TODO proccess all incoming
 
@@ -79,15 +73,52 @@ public class Server extends Thread {
 		 * e.printStackTrace(); }
 		 */
 	}
+	
+	/**
+	 * Figures out the type of the message
+	 * and performs the neccessary operations.
+	 * @param msg
+	 */
+	private void handleMsg(MsgData msg) {
+		switch (msg.getType()) {
+		case MsgData.CONNECTION:
+			handleMsg((Connection)msg);
+			break;
+		case MsgData.PACKAGE:
+			handleMsg((MsgBundle)msg);
+			break;
+		case MsgData.INPUT:
+			handleMsg((Input)msg);
+			break;
+		}
+	}
+	
+	/**
+	 * handles all the messages contained in the bundle.
+	 * @param msg
+	 */
+	private void handleMsg(MsgBundle msg) {
+		for(MsgData m : msg.getPastMessages()) {
+			handleMsg(m);
+		}
+	}
 
-	private void handleConnectionRequest(MsgData data) {
-		Connection req = (Connection) data;
+	/**
+	 * Handles a connecion request message, establishing a packetsender
+	 * for the connection client and informing them of the success.
+	 * @param msg
+	 */
+	private void handleMsg(Connection msg) {
 		System.out.println("YAY");
 		Connection c = new Connection(0, true);
-		PacketSender ps = new PacketSender(socket, req.getAddress(),
-				req.getPort(), "Server_Sender_" + req.getAddress());
+		PacketSender ps = new PacketSender(socket, msg.getAddress(),
+				msg.getPort(), "Server_Sender_" + msg.getAddress());
 		clients.add(ps);
 		ps.addMessage(c);
+	}
+	
+	private void handleMsg(Input msg) {
+		
 	}
 
 }

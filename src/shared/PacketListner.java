@@ -3,12 +3,13 @@ package shared;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.PortUnreachableException;
 import java.util.Date;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class PacketListner extends Thread {
-	private AtomicBoolean alive = new AtomicBoolean(true);
+public class PacketListner extends StoppableThread {
+	
 	private ConcurrentLinkedQueue<MsgData> messageQueue = new ConcurrentLinkedQueue<MsgData>();
 	private Date latest = null;
 	private DatagramSocket socket;
@@ -40,20 +41,30 @@ public class PacketListner extends Thread {
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 			try {
 				socket.receive(packet);
+				System.out.println("received!");
 				MsgData msg = Util.unpack(packet.getData());
-				if(msg.getType() == MsgData.PACKAGE) {
+				messageQueue.add(msg);
+				/* Removed due to sorting issues
+				 * if(msg.getType() == MsgData.PACKAGE) {
 					addIfLegit((Package)msg);
 				} else {
 					addIfLegit(msg);
-				}
+				}*/
 				
 				
+			} catch (PortUnreachableException ex) {
+				alive.set(false);
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			} 
 		}
 	}
 	
+	/**
+	 * 
+	 * @param msg
+	 * @deprecated the queue can't differentiate between different users
+	 */
 	private void addIfLegit(MsgData msg) {
 		MsgData last = null;
 		for(MsgData m : messageQueue) {
@@ -72,7 +83,12 @@ public class PacketListner extends Thread {
 		}
 	}
 	
-	private void addIfLegit(Package msg) {
+	/**
+	 * 
+	 * @param msg
+	 * @deprecated the queue can't differentiate between different users
+	 */
+	private void addIfLegit(MsgBundle msg) {
 		MsgData[] pack =  msg.getPastMessages();
 		
 		MsgData last = null;
