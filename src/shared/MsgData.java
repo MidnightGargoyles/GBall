@@ -18,7 +18,7 @@ public class MsgData implements Serializable {
 	public static final int INPUT = 5;
 	
 	protected int type;
-	private Date index;
+	protected Date index;
 	private InetAddress source = null;
 	
 	public MsgData(int type) {
@@ -31,11 +31,21 @@ public class MsgData implements Serializable {
 	}
 	
 	public boolean greaterThan(MsgData data) {
-		return index.after(data.index);
+		return greaterThan(data.index);
+	}
+	
+	public boolean greaterThan(Date date) {
+		if(date == null) return true;
+		return index.after(date);
 	}
 	
 	public boolean lessThan(MsgData data) {
-		return index.before(data.index);
+		return lessThan(data.index);
+	}
+	
+	public boolean lessThan(Date date) {
+		if(date == null) return false;
+		return index.before(date);
 	}
 	public Date getTimestamp() {
 		return index;

@@ -8,6 +8,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import client.Client;
 import shared.Connection;
@@ -23,6 +25,7 @@ public class Server extends StoppableThread {
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
+	private HashMap<InetAddress, Date> lastTimeStamps = new HashMap<InetAddress, Date>();
 	private Input[] playerInputs = { 
 			new Input(KeyState.OFF), new Input(KeyState.OFF), 
 			new Input(KeyState.OFF), new Input(KeyState.OFF) };
@@ -81,6 +84,8 @@ public class Server extends StoppableThread {
 	 */
 	private void handleMsg(MsgData msg) {
 		if(msg == null) return;
+		if(!msg.greaterThan(lastTimeStamps.get(msg.getSource()))) return;
+		lastTimeStamps.put(msg.getSource(), msg.getTimestamp());
 		switch (msg.getType()) {
 		case MsgData.CONNECTION:
 			handleMsg((Connection)msg);
@@ -91,6 +96,8 @@ public class Server extends StoppableThread {
 		case MsgData.INPUT:
 			handleMsg((Input)msg);
 			break;
+		default:
+			System.err.println("Uknown message type: " + msg.getType() + " (Server.handleMsg())");
 		}
 	}
 	

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -36,6 +37,9 @@ public class PacketSender extends StoppableThread {
 			if (msg == null) continue;
 			msg.setSource(socket.getLocalAddress());
 			bundle.addNext(msg);
+			bundle.refreshStamp();
+			Random r = new Random();
+			if(r.nextInt(10) < 3) continue;
 			byte[] buf = Util.pack(bundle);
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 			
