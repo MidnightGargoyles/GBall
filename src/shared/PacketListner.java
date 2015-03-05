@@ -41,7 +41,6 @@ public class PacketListner extends StoppableThread {
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 			try {
 				socket.receive(packet);
-				System.out.println("received!");
 				MsgData msg = Util.unpack(packet.getData());
 				messageQueue.add(msg);
 				/* Removed due to sorting issues

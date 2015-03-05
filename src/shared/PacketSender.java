@@ -13,11 +13,13 @@ public class PacketSender extends StoppableThread {
 	private DatagramSocket socket;
 	private InetAddress address;
 	private int port;
+	private MsgBundle bundle;
 	
 	public PacketSender(DatagramSocket socket, InetAddress address, int port) {
 		this.socket = socket;
 		this.address = address;
 		this.port = port;
+		this.bundle = new MsgBundle();
 		start();
 	}
 	
@@ -32,15 +34,13 @@ public class PacketSender extends StoppableThread {
 			MsgData msg = messageQueue.poll();
 			
 			if (msg == null) continue;
-			System.out.println("Fetching message...");
-			System.out.println(msg.toString());
 			msg.setSource(socket.getLocalAddress());
-			byte[] buf = Util.pack(msg);
+			bundle.addNext(msg);
+			byte[] buf = Util.pack(bundle);
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 			
 			try {
 				socket.send(packet);
-				System.out.println("SENT");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

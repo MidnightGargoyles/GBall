@@ -80,6 +80,7 @@ public class Server extends StoppableThread {
 	 * @param msg
 	 */
 	private void handleMsg(MsgData msg) {
+		if(msg == null) return;
 		switch (msg.getType()) {
 		case MsgData.CONNECTION:
 			handleMsg((Connection)msg);
