@@ -13,13 +13,17 @@ import GBall.EntityManager;
 import GBall.GameWindow;
 import GBall.KeyConfig;
 import GBall.Vector2D;
+import shared.Connection;
+import shared.Input;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
 
-public class ClientWorld {
+public class ClientWorld implements KeyListener {
 	private PacketListner listener;
 	private PacketSender sender;
+	private Input currentInput = new Input();
+	private Input lastInput = new Input();
 	
 	private static class WorldSingletonHolder {
 		public static final ClientWorld instance = new ClientWorld();
@@ -37,6 +41,7 @@ public class ClientWorld {
 	private ClientWorld() {
 		entManager = new EntityManager();
 		m_gameWindow = new GameWindow(entManager);
+		addKeyListener(this);
 	}
 
 	public void process() {
@@ -65,8 +70,15 @@ public class ClientWorld {
 		}*/
 		while (true) {
 			if (newFrame()) {
+				// Only add changes to the message queue
+				if(!lastInput.similarAs(currentInput)) {
+					sender.addMessage(new Input());
+				}
+				lastInput = currentInput;
+				currentInput = new Input();
 				// TODO: Get State /Send input
 				m_gameWindow.repaint();
+				
 				try {
 					Thread.sleep(1000/60);
 				} catch (InterruptedException e) {
@@ -149,5 +161,43 @@ public class ClientWorld {
 		this.listener = listener;
 		this.sender = sender;
 	}
+	
+	@Override
+	public void keyPressed(KeyEvent e) {
+		System.out.println("foo?");
+		try {
+			if (e.getKeyCode() == KeyEvent.VK_D) {
+				currentInput.right = Input.KeyState.ON;
+			} else if (e.getKeyCode() == KeyEvent.VK_A) {
+				currentInput.left = Input.KeyState.ON;
+			} else if (e.getKeyCode() == KeyEvent.VK_W) {
+				currentInput.forward = Input.KeyState.ON;
+			}
+		} catch (Exception x) {
+			System.err.println(x);
+		}
+	}
 
+	@Override
+	public void keyReleased(KeyEvent e) {
+		try {
+			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				System.exit(0);
+			} else if (e.getKeyCode() == KeyEvent.VK_D) {
+				currentInput.right = Input.KeyState.OFF;
+			} else if (e.getKeyCode() == KeyEvent.VK_A) {
+				currentInput.left = Input.KeyState.OFF;
+			} else if (e.getKeyCode() == KeyEvent.VK_W) {
+				currentInput.forward = Input.KeyState.OFF;
+			}
+		} catch (Exception x) {
+			System.err.println(x);
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 }

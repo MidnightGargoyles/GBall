@@ -118,7 +118,7 @@ public class Server extends StoppableThread {
 	}
 	
 	private void handleMsg(Input msg) {
-		
+		System.out.println(msg.forward);
 	}
 
 }

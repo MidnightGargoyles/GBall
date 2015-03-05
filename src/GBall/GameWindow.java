@@ -26,7 +26,6 @@ public class GameWindow extends Frame implements WindowListener {
 
 	@Override
 	public void update(Graphics g) {
-		System.out.println("repaint");
 		if (offScreenGraphicsCtx == null) {
 			offScreenImage = createImage(getSize().width, getSize().height);
 			offScreenGraphicsCtx = offScreenImage.getGraphics();

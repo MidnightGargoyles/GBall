@@ -33,6 +33,7 @@ public class PacketSender extends StoppableThread {
 			
 			if (msg == null) continue;
 			System.out.println("Fetching message...");
+			System.out.println(msg.toString());
 			msg.setSource(socket.getLocalAddress());
 			byte[] buf = Util.pack(msg);
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);

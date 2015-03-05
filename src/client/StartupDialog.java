@@ -22,7 +22,7 @@ public class StartupDialog extends JDialog {
 		public String value;
 	}
 	private Result result = null;
-	private StartupDialog(String title, String message) {
+	private StartupDialog(String title) {
 		super((JFrame) null, title, true);
 
 		/*
@@ -32,6 +32,7 @@ public class StartupDialog extends JDialog {
 
 		JPanel portInputPane = new JPanel();
 		field = new JTextField(16);
+		portInputPane.add(new JLabel("IP:"));
 		portInputPane.add(field);
 
 		getContentPane().add(portInputPane);
@@ -84,7 +85,7 @@ public class StartupDialog extends JDialog {
 	}
 	
 	public static Result showDialog() {
-		StartupDialog d = new StartupDialog("title", "message?");
+		StartupDialog d = new StartupDialog("GBall Startup");
 		while(d.result == null);
 		return d.result;
 	}

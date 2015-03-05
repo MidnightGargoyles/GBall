@@ -11,7 +11,7 @@ import java.net.InetAddress;
 public class Util {
 	public static byte[] pack(MsgData msg) {
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
+		System.out.println("packing: "  + msg.toString());
 		ObjectOutputStream oos;
 		try {
 			oos = new ObjectOutputStream(baos);
@@ -32,11 +32,13 @@ public class Util {
 			e.printStackTrace();
 			return null;
 		}
-
-		return baos.toByteArray();
+		byte[] bArr = baos.toByteArray();
+		System.out.println(new String(bArr));
+		return bArr;
 	}
 	
 	public static MsgData unpack(byte[] data) {
+		
 		ByteArrayInputStream baos = new ByteArrayInputStream(data);
 	    try {
 			ObjectInputStream oos = new ObjectInputStream(baos);

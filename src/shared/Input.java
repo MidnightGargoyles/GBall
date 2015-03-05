@@ -56,5 +56,11 @@ public class Input extends MsgData {
 		left = (newState.left == KeyState.NO_CHANGE) ? left : newState.left;
 		right = (newState.right == KeyState.NO_CHANGE) ? right : newState.right;
 	}
+
+	public boolean similarAs(Input input) {
+		return (forward == input.forward || input.forward == KeyState.NO_CHANGE) &&
+				(left == input.left || input.left == KeyState.NO_CHANGE) && 
+				(right == input.right || input.right == KeyState.NO_CHANGE);
+	}
 	
 }

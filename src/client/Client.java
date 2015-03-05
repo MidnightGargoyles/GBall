@@ -1,5 +1,7 @@
 package client;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
@@ -7,8 +9,10 @@ import java.net.UnknownHostException;
 
 import javax.swing.JOptionPane;
 
+import GBall.Const;
 import server.Server;
 import shared.Connection;
+import shared.Input;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
@@ -20,6 +24,7 @@ public class Client {
 	public static final int server_port = 25041;
 	private PacketSender sender;
 	private PacketListner listener;
+	
 	/**
 	 * Creates a client and a server
 	 */
@@ -49,7 +54,6 @@ public class Client {
 	}
 
 	public static void main(String [] args) {
-		//StartupDialog d = new StartupDialog("HAI", "foo");
 		Client c;
 		do {
 			ThreadManager.inst().killAll();
@@ -90,6 +94,8 @@ public class Client {
 		System.out.println("yes");
 		return true;
 	}
+	
+	
 	
 	
 }
