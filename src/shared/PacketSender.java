@@ -38,8 +38,6 @@ public class PacketSender extends StoppableThread {
 			msg.setSource(socket.getLocalAddress());
 			bundle.addNext(msg);
 			bundle.refreshStamp();
-			Random r = new Random();
-			if(r.nextInt(10) < 3) continue;
 			byte[] buf = Util.pack(bundle);
 			DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 			
