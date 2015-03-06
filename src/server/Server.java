@@ -84,20 +84,31 @@ public class Server extends StoppableThread {
 	 */
 	private void handleMsg(MsgData msg) {
 		if(msg == null) return;
-		if(!msg.greaterThan(lastTimeStamps.get(msg.getSource()))) return;
-		lastTimeStamps.put(msg.getSource(), msg.getTimestamp());
+		/*if(msg.getType() == MsgData.PACKAGE) { // special case to ignore timestamps
+			handleMsg((MsgBundle)msg);
+			return;
+		}*/
+		Date d = lastTimeStamps.get(msg.getSource());
+		if(!msg.greaterThan(d)) return;
+		
 		switch (msg.getType()) {
 		case MsgData.CONNECTION:
 			handleMsg((Connection)msg);
 			break;
-		case MsgData.PACKAGE:
-			handleMsg((MsgBundle)msg);
-			break;
 		case MsgData.INPUT:
 			handleMsg((Input)msg);
 			break;
+		case MsgData.PACKAGE: {
+			handleMsg((MsgBundle)msg);
+			break;
+		}
 		default:
 			System.err.println("Uknown message type: " + msg.getType() + " (Server.handleMsg())");
+			return; // abort
+		}
+		// Do this last as we want to process bundles recursively
+		if(msg.greaterThan(d)) {
+			lastTimeStamps.put(msg.getSource(), msg.getTimestamp());
 		}
 	}
 	
@@ -126,7 +137,7 @@ public class Server extends StoppableThread {
 	}
 	
 	private void handleMsg(Input msg) {
-		System.out.println("forward: " + msg.forward);
+		System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
 	}
 
 }

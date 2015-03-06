@@ -14,6 +14,9 @@ public class PacketSender extends StoppableThread {
 	private DatagramSocket socket;
 	private InetAddress address;
 	private int port;
+	/**
+	 * Has no time stamp to pre
+	 */
 	private MsgBundle bundle;
 	
 	public PacketSender(DatagramSocket socket, InetAddress address, int port) {
@@ -21,6 +24,7 @@ public class PacketSender extends StoppableThread {
 		this.address = address;
 		this.port = port;
 		this.bundle = new MsgBundle();
+		this.bundle.setSource(address);
 		start();
 	}
 	
