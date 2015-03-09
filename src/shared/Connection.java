@@ -2,29 +2,24 @@ package shared;
 
 import java.net.InetAddress;
 
-public class Connection extends MsgData{
-	private int entID  = -1;
-	private boolean success = false;
-	private InetAddress address = null;
-	private int port = -1;
+public class Connection extends ATMMsg {
+	//private int entID  = -1;
+	//private boolean success = false;
 	
 	public Connection(InetAddress address, int port) {
-		super(MsgData.CONNECTION);
-		this.address = address;
-		this.port = port;
+		super(MsgData.CONNECTION, address, port);
+		this.sourceAddr = address;
+		this.sourcePort = port;
 	}
 	
-	public Connection(int entID, boolean success) {
-		super(MsgData.CONNECTION);
+	/*public Connection(int entID, boolean success, int srcPort) {
+		super(MsgData.CONNECTION, null, srcPort);
 		this.entID = entID;
 		this.success = success;
-	}
+	}*/
 	
-	public int getPort() {
-		return port;
-	}
-	
-	public InetAddress getAddress() {
+	/*public InetAddress getAddress() {
 		return address;
-	}
+	}*/
+	
 }

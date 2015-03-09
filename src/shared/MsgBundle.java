@@ -18,9 +18,7 @@ public class MsgBundle extends MsgData {
 		super(MsgData.PACKAGE);
 	}
 	
-	public void refreshStamp() {
-		index = new Date();
-	}
+	
 	public void addNext(MsgData msg) {
 		
 		for(int i = 0; i < pastMessages.length-1 ; i++) {

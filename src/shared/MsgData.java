@@ -5,7 +5,9 @@ import java.net.InetAddress;
 import java.util.Date;
 
 public class MsgData implements Serializable {
-
+	public enum Protocol {
+		MAYBE, AT_MOST_ONCE;
+	}
 	/**
 	 * 
 	 */
@@ -16,14 +18,37 @@ public class MsgData implements Serializable {
 	public static final int CONNECTION = 3;
 	public static final int PACKAGE = 4;
 	public static final int INPUT = 5;
+	/**
+	 * A generic ack that contains no additional information
+	 */
+	public static final int ACK = 6;
+	public static final int RESPOND = 7;
+	public static final int END_ACK = 8;
 	
+	public final Protocol protocol;
+	public final boolean canPack;
 	protected int type;
 	protected Date index;
 	private InetAddress source = null;
 	
+	/**
+	 * Constructs a message, defaulting to using the <b>MAYBE</b> protocol.
+	 * @param type
+	 */
 	public MsgData(int type) {
+		this(type, Protocol.MAYBE, true);
+	}
+	
+	/**
+	 * Constructs a message, following the specified protocol.
+	 * @param type
+	 * @param protocol
+	 */
+	public MsgData(int type, Protocol protocol, boolean canPack) {
 		this.type = type;
 		this.index = new Date();
+		this.protocol = protocol;
+		this.canPack = canPack;
 	}
 	
 	public int getType() {
@@ -49,6 +74,9 @@ public class MsgData implements Serializable {
 	}
 	public Date getTimestamp() {
 		return index;
+	}
+	public void refreshStamp() {
+		index = new Date();
 	}
 	
 	/**

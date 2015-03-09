@@ -12,12 +12,16 @@ import java.util.Date;
 import java.util.HashMap;
 
 import client.Client;
+import shared.ATMMsg;
 import shared.Connection;
+import shared.ConnectionAck;
 import shared.Input;
+import shared.MsgAck;
 import shared.MsgBundle;
 import shared.MsgData;
 import shared.PacketListner;
 import shared.PacketSender;
+import shared.RespondOrder;
 import shared.Input.KeyState;
 import shared.StoppableThread;
 
@@ -84,6 +88,7 @@ public class Server extends StoppableThread {
 	 */
 	private void handleMsg(MsgData msg) {
 		if(msg == null) return;
+		//System.out.println(msg + " <<<<");
 		/*if(msg.getType() == MsgData.PACKAGE) { // special case to ignore timestamps
 			handleMsg((MsgBundle)msg);
 			return;
@@ -98,10 +103,15 @@ public class Server extends StoppableThread {
 		case MsgData.INPUT:
 			handleMsg((Input)msg);
 			break;
-		case MsgData.PACKAGE: {
+		case MsgData.PACKAGE:
 			handleMsg((MsgBundle)msg);
 			break;
-		}
+		case MsgData.ACK:
+			handleMsg((MsgAck) msg);
+			break;
+		case MsgData.RESPOND:
+			handleMsg((RespondOrder) msg);
+			break;
 		default:
 			System.err.println("Uknown message type: " + msg.getType() + " (Server.handleMsg())");
 			return; // abort
@@ -128,16 +138,43 @@ public class Server extends StoppableThread {
 	 * @param msg
 	 */
 	private void handleMsg(Connection msg) {
-		System.out.println("YAY");
-		Connection c = new Connection(0, true);
-		PacketSender ps = new PacketSender(socket, msg.getAddress(),
-				msg.getPort(), "Server_Sender_" + msg.getAddress());
-		clients.add(ps);
+		//Connection c = new Connection(0, true, socket.getLocalPort());
+		PacketSender ps = null;
+		for(PacketSender p : clients) {
+			if(p.matches(msg.getSource(), msg.getSourcePort())) {
+				ps = p;
+				break;
+			}
+		}
+		if(ps == null) {
+			ps = new PacketSender(socket, msg.getSourceAddress(),
+					msg.getSourcePort(), "Server_Sender_" + msg.getSourceAddress());
+			clients.add(ps);
+		}
+		ConnectionAck c = new ConnectionAck(msg.id, msg.getSource(), 1337, true);
 		ps.addMessage(c);
+		
 	}
 	
 	private void handleMsg(Input msg) {
 		System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
 	}
-
+	
+	private void handleMsg(RespondOrder msg) {
+		/*for(PacketSender c : clients) {
+			//System.out.println(c.getTargetAddress().toString() + " == " + msg.getSource().toString());
+			if(c.getTargetAddress().equals(msg.getSource())) {
+				//System.out.println("RESPONDED");
+				c.addMessage(new MsgAck(msg.getTimestamp(), msg.getSource()));
+			}
+		}*/
+	}
+	
+	private void handleMsg(MsgAck msg) {
+		for(PacketSender c : clients) {
+			if(c.getTargetAddress().equals(msg.getSourceAddress())) {
+				c.notifyATMResponse(msg);
+			}
+		}
+	}
 }

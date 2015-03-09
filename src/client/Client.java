@@ -12,6 +12,7 @@ import javax.swing.JOptionPane;
 import GBall.Const;
 import server.Server;
 import shared.Connection;
+import shared.ConnectionAck;
 import shared.Input;
 import shared.MsgData;
 import shared.PacketListner;
@@ -44,6 +45,7 @@ public class Client {
 			socket = new DatagramSocket();
 			sender = new PacketSender(socket, address, server_port, "Client_Sender");
 			listener = new PacketListner(socket, "Client_Listener");
+			listener.setSender(sender);
 			socket.connect(address, server_port);
 		} catch (UnknownHostException e) {
 			System.out.println("");
@@ -91,8 +93,13 @@ public class Client {
 			if(start + 5000 < System.currentTimeMillis()) return false;
 		}
 		if(!listener.isAlive()) return false;
+		if(d.getType() == MsgData.CONNECTION) {
+			ConnectionAck ac = (ConnectionAck) d;
+			sender.notifyATMResponse(ac);
+			return true;
+		}
 		System.out.println("yes");
-		return true;
+		return false;
 	}
 	
 	
