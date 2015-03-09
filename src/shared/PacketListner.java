@@ -51,11 +51,14 @@ public class PacketListner extends StoppableThread {
 	public void run() {
 		// TODO
 		while(alive.get()) {
-			byte[] bytes = new byte[1024];
+			byte[] bytes = new byte[2048];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 			try {
 				socket.receive(packet);
+				
+				//System.out.println();
 				MsgData msg = Util.unpack(packet.getData());
+				System.out.println(getName() + " received: " + msg);
 				//System.out.println(getName() + " received:  " + msg);
 				/*if(msg.protocol == MsgData.Protocol.AT_MOST_ONCE) {
 					handleATMMsg((ATMMsg) msg);

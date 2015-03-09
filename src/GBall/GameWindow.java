@@ -3,6 +3,8 @@ package GBall;
 import java.awt.*;
 import java.awt.event.*;
 
+import server.World;
+
 public class GameWindow extends Frame implements WindowListener {
 
 	/**

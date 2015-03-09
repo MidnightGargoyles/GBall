@@ -5,6 +5,8 @@ import java.awt.Graphics;
 import java.util.LinkedList;
 import java.util.ListIterator;
 
+import shared.Input;
+
 public class EntityManager {
 	private LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
 
@@ -12,12 +14,12 @@ public class EntityManager {
 	}
 
 	public void addShip(final Vector2D position, final Vector2D speed,
-			final Vector2D direction, final Color color, final KeyConfig kc) {
-		m_entities.add(new Ship(position, speed, direction, color, kc));
+			final Vector2D direction, final Color color, Input kc, int id) {
+		m_entities.add(new Ship(position, speed, direction, color, kc, id));
 	}
 
-	public void addBall(final Vector2D position, final Vector2D speed) {
-		m_entities.add(new Ball(position, speed));
+	public void addBall(final Vector2D position, final Vector2D speed, int id) {
+		m_entities.add(new Ball(position, speed, id));
 	}
 
 	public void updatePositions() {
@@ -137,5 +139,13 @@ public class EntityManager {
 	public LinkedList<GameEntity> getState() {
 
 		return m_entities;
+	}
+	
+	public GameEntity[] toArray() {
+		GameEntity[] ge = new GameEntity[m_entities.size()];
+		for(int i = 0; i < ge.length; i++) {
+			ge[i] = m_entities.get(i);
+		}
+		return ge;
 	}
 }

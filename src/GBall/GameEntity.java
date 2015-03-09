@@ -2,6 +2,8 @@ package GBall;
 
 import java.io.Serializable;
 
+import shared.EntityTransformation;
+
 public abstract class GameEntity implements Serializable {
 	/**
 	 * 
@@ -13,7 +15,8 @@ public abstract class GameEntity implements Serializable {
 	private final Vector2D m_speed;
 	private final Vector2D m_direction; // Should always be unit vector;
 										// determines the object's facing
-
+	public final int id;
+	
 	private double m_acceleration; // Accelerates by multiplying this with
 									// m_direction
 	private long m_lastUpdateTime;
@@ -29,7 +32,7 @@ public abstract class GameEntity implements Serializable {
 
 	public GameEntity(final Vector2D position, final Vector2D speed,
 			final Vector2D direction, double maxAcceleration, double maxSpeed,
-			double friction) {
+			double friction, int id) {
 		m_position = position;
 		m_speed = speed;
 		m_direction = direction;
@@ -40,6 +43,7 @@ public abstract class GameEntity implements Serializable {
 		m_lastUpdateTime = System.currentTimeMillis();
 		m_initialPosition = new Vector2D(position.getX(), position.getY());
 		m_initialDirection = new Vector2D(direction.getX(), direction.getY());
+		this.id = id;
 	}
 
 	public void setAcceleration(double a) {
@@ -118,6 +122,11 @@ public abstract class GameEntity implements Serializable {
 
 	public void displace(final Vector2D displacement) {
 		m_position.add(displacement);
+	}
+	
+	public void updateTransformation(EntityTransformation t) {
+		m_position.set(t.pos.getX(), t.pos.getY());
+		m_direction.set(t.dir.getX(), t.dir.getY());
 	}
 
 }

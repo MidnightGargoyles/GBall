@@ -45,6 +45,7 @@ public class Server extends StoppableThread {
 	}
 
 	public void run() {
+		World.getInstance().initialize();
 		while (alive.get()) {
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
@@ -52,11 +53,14 @@ public class Server extends StoppableThread {
 			}
 			// TODO proccess all incoming
 
-			// TODO simulate world
-
+			World.getInstance().process();
+			
+			for(int i = 0; i < clients.size(); i++) {
+				clients.get(i).addMessage(World.getInstance().packageSubframe());
+			}
 			// TODO send messages
 			try {
-				Thread.sleep(1000/60);
+				Thread.sleep(1000/20);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -157,7 +161,8 @@ public class Server extends StoppableThread {
 	}
 	
 	private void handleMsg(Input msg) {
-		System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
+		//System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
+		World.getInstance().updateInputs(msg);
 	}
 	
 	private void handleMsg(RespondOrder msg) {

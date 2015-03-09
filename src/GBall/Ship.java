@@ -3,24 +3,27 @@ package GBall;
 import java.awt.Color;
 import java.awt.event.*;
 
-public class Ship extends GameEntity implements KeyListener {
+import server.World;
+import shared.Input;
+
+public class Ship extends GameEntity {
 
 	private Color m_color;
-	private final KeyConfig m_keyConfig;
+	private Input m_keyConfig;
 	private int rotation = 0; // Set to 1 when rotating clockwise, -1 when
 								// rotating counterclockwise
 	private boolean braking = false;
 
 	public Ship(final Vector2D position, final Vector2D speed,
-			final Vector2D direction, final Color col, final KeyConfig kc) {
+			final Vector2D direction, final Color col, Input kc, int id) {
 		super(position, speed, direction, Const.SHIP_MAX_ACCELERATION,
-				Const.SHIP_MAX_SPEED, Const.SHIP_FRICTION);
+				Const.SHIP_MAX_SPEED, Const.SHIP_FRICTION, id);
 		m_color = col;
 		m_keyConfig = kc;
-		World.getInstance().addKeyListener(this);
+		//World.getInstance().addKeyListener(this);
 	}
 
-	@Override
+	/*@Override
 	public void keyPressed(KeyEvent e) {
 		try {
 			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
@@ -58,10 +61,11 @@ public class Ship extends GameEntity implements KeyListener {
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-	}
+	}*/
 
 	@Override
 	public void move() {
+		updateInputs();
 		if (rotation != 0) {
 			rotate(rotation * Const.SHIP_ROTATION);
 			scaleSpeed(Const.SHIP_TURN_BRAKE_SCALE);
@@ -71,6 +75,43 @@ public class Ship extends GameEntity implements KeyListener {
 			setAcceleration(0);
 		}
 		super.move();
+	}
+	
+	private void updateInputs() {
+		switch(m_keyConfig.right) {
+		case ON:
+			rotation = 1;
+			break;
+		case OFF:
+			if(rotation == 1) {
+				rotation = 0;
+			}
+			break;
+		default:
+			break;
+		}
+		switch(m_keyConfig.left) {
+		case ON:
+			rotation = -1;
+			break;
+		case OFF:
+			if(rotation == -1) {
+				rotation = 0;
+			}
+			break;
+		default:
+			break;
+		}
+		switch(m_keyConfig.forward) {
+		case ON:
+			setAcceleration(Const.SHIP_MAX_ACCELERATION);
+			break;
+		case OFF:
+			setAcceleration(0);
+			break;
+		default:
+			break;
+		}
 	}
 
 	@Override

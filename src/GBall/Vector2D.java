@@ -6,7 +6,7 @@ public class Vector2D implements Serializable {
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -54834150240167774L;
 	private double m_x;
 	private double m_y;
 
