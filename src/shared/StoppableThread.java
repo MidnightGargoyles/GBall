@@ -17,5 +17,6 @@ public class StoppableThread extends Thread {
 	 */
 	public void halt() {
 		alive.set(false);
+		interrupt();
 	}
 }

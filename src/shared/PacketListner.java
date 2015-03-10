@@ -49,33 +49,20 @@ public class PacketListner extends StoppableThread {
 	}
 	
 	public void run() {
-		// TODO
 		while(alive.get()) {
 			byte[] bytes = new byte[2048];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 			try {
 				socket.receive(packet);
 				
-				//System.out.println();
 				MsgData msg = Util.unpack(packet.getData());
-				System.out.println(getName() + " received: " + msg);
-				//System.out.println(getName() + " received:  " + msg);
-				/*if(msg.protocol == MsgData.Protocol.AT_MOST_ONCE) {
-					handleATMMsg((ATMMsg) msg);
-				} else */
+				//System.out.println(getName() + " received: " + msg);
+				
 				if(msg.type == MsgData.ACK) {
 					handleGenericAck((MsgAck) msg);
 				} else {
 					messageQueue.add(msg);
 				}
-				
-				/* Removed due to sorting issues
-				 * if(msg.getType() == MsgData.PACKAGE) {
-					addIfLegit((Package)msg);
-				} else {
-					addIfLegit(msg);
-				}*/
-				
 				
 			} catch (PortUnreachableException ex) {
 				alive.set(false);
@@ -84,6 +71,7 @@ public class PacketListner extends StoppableThread {
 			} 
 		}
 	}
+	
 	@Deprecated
 	private void handleATMMsg(ATMMsg msg) {
 		
@@ -172,10 +160,6 @@ public class PacketListner extends StoppableThread {
 	
 	public MsgData getNextMsg() {
 		return messageQueue.poll();
-	}
-	
-	public void kill() {
-		alive.set(false);
 	}
 
 }

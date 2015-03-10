@@ -39,8 +39,7 @@ public class PacketSender extends StoppableThread {
 			try {
 				empty.acquire();
 			} catch (InterruptedException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
+				continue;
 			}
 			MsgData msg = messageQueue.peek();
 			
@@ -104,9 +103,6 @@ public class PacketSender extends StoppableThread {
 		}
 	}
 	
-	public void kill() {
-		alive.set(false);
-	}
 	
 	public InetAddress getTargetAddress() {
 		return address;
