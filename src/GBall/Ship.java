@@ -15,6 +15,9 @@ public class Ship extends GameEntity {
 								// rotating counterclockwise
 	private boolean braking = false;
 
+	private final Vector2D m_lastPosition0 = new Vector2D();
+	private final Vector2D m_lastPosition1 = new Vector2D();
+	
 	public Ship(final Vector2D position, final Vector2D speed,
 			final Vector2D direction, final Color col, Input kc, int id) {
 		super(position, speed, direction, Const.SHIP_MAX_ACCELERATION,
@@ -151,6 +154,10 @@ public class Ship extends GameEntity {
 	public void updateTransformation(EntityTransformation t) {
 		super.updateTransformation(t);
 		rotation = t.rotation;
-		
+		if(m_lastPosition1.minusOperator(m_lastPosition0).length() < t.pos.minusOperator(m_lastPosition1).length()) {
+			setAcceleration(Const.SHIP_MAX_ACCELERATION);
+		} else {
+			setAcceleration(0);
+		}
 	}
 }

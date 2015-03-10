@@ -68,8 +68,7 @@ public class Server extends StoppableThread {
 					
 					Thread.sleep(TPS - elapsed/1000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					continue;
 				}
 			}
 			// TODO send messages

@@ -15,6 +15,8 @@ public abstract class GameEntity implements Serializable {
 	private final Vector2D m_speed;
 	private final Vector2D m_direction; // Should always be unit vector;
 										// determines the object's facing
+	
+	
 	public final int id;
 	
 	private double m_acceleration; // Accelerates by multiplying this with
@@ -125,7 +127,7 @@ public abstract class GameEntity implements Serializable {
 	}
 	
 	public void updateTransformation(EntityTransformation t) {
-		// TODO calculations for dead reckoning
+		m_speed.set(t.pos.getX() - m_position.getX(), t.pos.getY() - m_position.getY());
 		m_position.set(t.pos.getX(), t.pos.getY());
 		m_direction.set(t.dir.getX(), t.dir.getY());
 	}

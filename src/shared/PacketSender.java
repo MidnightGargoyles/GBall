@@ -17,6 +17,10 @@ public class PacketSender extends StoppableThread {
 	private InetAddress address;
 	private int port;
 	private Semaphore empty = new Semaphore(0);
+	/**
+	 * 0-99
+	 */
+	private static final int LOSS_RATE = 0;
 
 	private MsgBundle bundle;
 	
@@ -50,6 +54,7 @@ public class PacketSender extends StoppableThread {
 			switch(msg.protocol) {
 			case AT_MOST_ONCE:
 				msg.refreshStamp();
+				empty.release();
 				break;
 			case MAYBE:
 				messageQueue.poll();
@@ -65,14 +70,13 @@ public class PacketSender extends StoppableThread {
 				msg = bundle;
 			}
 			Random r = new Random();
-			if(r.nextInt(100) > 10) { // imaginary packet loss rate
+			if(r.nextInt(100) > LOSS_RATE) { // imaginary packet loss rate
 				byte[] buf = Util.pack(msg);
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 				
 				try {
 					socket.send(packet);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}

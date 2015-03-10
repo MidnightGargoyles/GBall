@@ -18,6 +18,8 @@ public class PacketListner extends StoppableThread {
 	private DatagramSocket socket;
 	private PacketSender sender = null;
 	
+	private static final int DELAY = 0;
+	
 	/**
 	 * Used for at most once protocol
 	 */
@@ -159,7 +161,11 @@ public class PacketListner extends StoppableThread {
 	}
 	
 	public MsgData getNextMsg() {
-		return messageQueue.poll();
+		if(messageQueue.peek() == null) return null;
+		Date d = new Date();
+		if(messageQueue.peek().getTimestamp().getTime() + DELAY < d.getTime()) // imaginary delay
+			return messageQueue.poll();
+		return null;
 	}
 
 }
