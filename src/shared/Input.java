@@ -1,5 +1,9 @@
 package shared;
-
+/**
+ * A message containing the input state of a given player.
+ * @author Niklas
+ *
+ */
 public class Input extends MsgData {
 	public enum KeyState {
 		ON, OFF, NO_CHANGE;

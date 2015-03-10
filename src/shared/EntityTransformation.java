@@ -6,6 +6,12 @@ import GBall.GameEntity;
 import GBall.Ship;
 import GBall.Vector2D;
 
+/**
+ * Represents the most releveant transformation properties
+ * of an entity.
+ * @author Niklas
+ * @author Victor
+ */
 public class EntityTransformation implements Serializable {
 	/**
 	 * 

@@ -105,6 +105,9 @@ public class PacketSender extends StoppableThread {
 	public InetAddress getTargetAddress() {
 		return address;
 	}
+	public int getTargetPort() {
+		return port;
+	}
 	/**
 	 * has same target
 	 */

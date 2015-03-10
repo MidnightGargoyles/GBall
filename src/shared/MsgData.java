@@ -35,7 +35,7 @@ public class MsgData implements Serializable {
 	 * Constructs a message, defaulting to using the <b>MAYBE</b> protocol.
 	 * @param type
 	 */
-	public MsgData(int type) {
+	protected MsgData(int type) {
 		this(type, Protocol.MAYBE, true);
 	}
 	
@@ -44,7 +44,7 @@ public class MsgData implements Serializable {
 	 * @param type
 	 * @param protocol
 	 */
-	public MsgData(int type, Protocol protocol, boolean canPack) {
+	protected MsgData(int type, Protocol protocol, boolean canPack) {
 		this.type = type;
 		this.index = new Date();
 		this.protocol = protocol;

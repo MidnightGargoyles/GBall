@@ -186,7 +186,7 @@ public class Server extends StoppableThread {
 	
 	private void handleMsg(MsgAck msg) {
 		for(PacketSender c : clients) {
-			if(c.getTargetAddress().equals(msg.getSourceAddress())) {
+			if(c.getTargetAddress().equals(msg.getSourceAddress()) && c.getTargetPort() == msg.getSourcePort()) {
 				c.notifyATMResponse(msg);
 			}
 		}
