@@ -44,7 +44,7 @@ public class Server extends StoppableThread {
 		listener = new PacketListner(socket, "Server_Listener");
 		start();
 	}
-
+	private int c = 0;
 	public void run() {
 		World.getInstance().initialize();
 		while (alive.get()) {
@@ -56,10 +56,13 @@ public class Server extends StoppableThread {
 			// TODO proccess all incoming
 
 			World.getInstance().process();
-			
-			for(int i = 0; i < clients.size(); i++) {
-				clients.get(i).addMessage(World.getInstance().packageSubframe());
+			if(c++ > 40) {
+				c = 0;
+				for(int i = 0; i < clients.size(); i++) {
+					clients.get(i).addMessage(World.getInstance().packageSubframe());
+				}
 			}
+			
 			long end = System.nanoTime();
 			long elapsed = end - start;
 			

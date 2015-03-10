@@ -46,6 +46,8 @@ public abstract class GameEntity implements Serializable {
 		m_initialPosition = new Vector2D(position.getX(), position.getY());
 		m_initialDirection = new Vector2D(direction.getX(), direction.getY());
 		this.id = id;
+		lastPos = new Vector2D(m_position);
+		System.out.println(toString() + " :> " + id);
 	}
 
 	public void setAcceleration(double a) {
@@ -126,10 +128,28 @@ public abstract class GameEntity implements Serializable {
 		m_position.add(displacement);
 	}
 	
+	private long lastUpdate = System.currentTimeMillis();
+	private final Vector2D lastPos;
+	
 	public void updateTransformation(EntityTransformation t) {
-		m_speed.set(t.pos.getX() - m_position.getX(), t.pos.getY() - m_position.getY());
+		double delta = (double) (System.currentTimeMillis() - lastUpdate)
+				/ (double) 1000;
+		if(id == 0) {
+			
+		}
+		if(delta != 0) {
+			changeSpeed(new Vector2D((t.pos.getX() - lastPos.getX()) / delta, (t.pos.getY() - lastPos.getY()) / delta));
+			//m_speed.set((t.pos.getX() - lastPos.getX()) / delta, (t.pos.getY() - lastPos.getY()) / delta);
+			if(id == 0) {
+				System.out.println("delta: " + delta);
+				System.out.println(lastPos.toString() + " > " + t.pos.toString());
+				System.out.println(m_speed.toString());
+			}
+		}
 		m_position.set(t.pos.getX(), t.pos.getY());
+		lastPos.set(m_position.getX(), m_position.getY());
 		m_direction.set(t.dir.getX(), t.dir.getY());
+		lastUpdate = System.currentTimeMillis();
 	}
 
 }

@@ -107,6 +107,9 @@ public class ClientWorld implements KeyListener {
 					.println("ClientWorld.handleMsg() error " + msg.getType());
 			break;
 		}
+		if(msg.greaterThan(d)) {
+			lastTimeStamps.put(msg.getSource(), msg.getTimestamp());
+		}
 	}
 
 	private void handleMsg(MsgBundle msg) {

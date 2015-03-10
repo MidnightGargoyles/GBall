@@ -113,4 +113,8 @@ public class Vector2D implements Serializable {
 	public Vector2D multiplyOperator(double factor) {
 		return new Vector2D(m_x * factor, m_y * factor);
 	}
+	
+	public String toString() {
+		return "[" + m_x + ", " + m_y + "]";
+	}
 }
