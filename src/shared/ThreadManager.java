@@ -1,7 +1,11 @@
 package shared;
 
 import java.util.ArrayList;
-
+/**
+ * Allows killing all threads from anywhere
+ * @author Niklas
+ *
+ */
 public class ThreadManager {
 	private static final ThreadManager instance = new ThreadManager();
 	private ArrayList<StoppableThread> threads = new ArrayList<StoppableThread>();

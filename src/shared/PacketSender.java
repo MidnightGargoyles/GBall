@@ -7,6 +7,7 @@ import java.net.InetAddress;
 import java.util.Date;
 import java.util.Random;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketSender extends StoppableThread {
@@ -15,6 +16,7 @@ public class PacketSender extends StoppableThread {
 	private DatagramSocket socket;
 	private InetAddress address;
 	private int port;
+	private Semaphore empty = new Semaphore(0);
 
 	private MsgBundle bundle;
 	
@@ -34,7 +36,12 @@ public class PacketSender extends StoppableThread {
 	
 	public void run() {
 		while(alive.get()) {
-			
+			try {
+				empty.acquire();
+			} catch (InterruptedException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			MsgData msg = messageQueue.peek();
 			
 			if (msg == null) continue;
@@ -59,7 +66,7 @@ public class PacketSender extends StoppableThread {
 				msg = bundle;
 			}
 			Random r = new Random();
-			if(r.nextInt(100) > 0) { // imaginary packet loss rate
+			if(r.nextInt(100) > 10) { // imaginary packet loss rate
 				byte[] buf = Util.pack(msg);
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 				
@@ -70,19 +77,18 @@ public class PacketSender extends StoppableThread {
 					e.printStackTrace();
 				}
 			}
-			
-			try {
-				Thread.sleep(1000/60);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
 	}
 	
+	/**
+	 * Adds a message to the queue, releasing the thread in
+	 * the process.
+	 * @param msg
+	 */
 	public void addMessage(MsgData msg) {
 		System.out.println(getName() + " added: " + msg);
 		messageQueue.add(msg);
+		empty.release();
 	}
 	
 	/**

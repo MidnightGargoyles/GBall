@@ -46,7 +46,7 @@ public final class Const {
     public final static double	        SHIP_BRAKE_SCALE = 0.978; // Scale speed by this factor (per frame) when braking
     public final static double	        SHIP_TURN_BRAKE_SCALE = 0.99; // Scale speed by this factor (per frame) when turning
     public final static double         SHIP_FRICTION = 0.99; // Scale speed by this factor (per frame) when not accelerating
-    public final static double 	SHIP_ROTATION = 5; // Rotate ship by this many radians (per frame) when turning
+    public final static double 	SHIP_ROTATION = Math.PI; // Rotate ship by this many radians (per second) when turning
 
     // Ball-related constants
     public final static int		BALL_RADIUS = 18;
