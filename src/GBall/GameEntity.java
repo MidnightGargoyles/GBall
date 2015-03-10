@@ -19,7 +19,7 @@ public abstract class GameEntity implements Serializable {
 	
 	private double m_acceleration; // Accelerates by multiplying this with
 									// m_direction
-	private long m_lastUpdateTime;
+	protected long m_lastUpdateTime;
 	private double m_maxAcceleration;
 	private double m_maxSpeed;
 	private double m_friction;
@@ -125,6 +125,7 @@ public abstract class GameEntity implements Serializable {
 	}
 	
 	public void updateTransformation(EntityTransformation t) {
+		// TODO calculations for dead reckoning
 		m_position.set(t.pos.getX(), t.pos.getY());
 		m_direction.set(t.dir.getX(), t.dir.getY());
 	}

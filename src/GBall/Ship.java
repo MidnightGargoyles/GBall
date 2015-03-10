@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.event.*;
 
 import server.World;
+import shared.EntityTransformation;
 import shared.Input;
 
 public class Ship extends GameEntity {
@@ -66,8 +67,11 @@ public class Ship extends GameEntity {
 	@Override
 	public void move() {
 		updateInputs();
+		long currentTime = System.currentTimeMillis();
+		double delta = (double) (currentTime - m_lastUpdateTime)
+				/ (double) 1000;
 		if (rotation != 0) {
-			rotate(rotation * Const.SHIP_ROTATION);
+			rotate(rotation * Const.SHIP_ROTATION * delta);
 			scaleSpeed(Const.SHIP_TURN_BRAKE_SCALE);
 		}
 		if (braking) {
@@ -78,6 +82,7 @@ public class Ship extends GameEntity {
 	}
 	
 	private void updateInputs() {
+		if(m_keyConfig == null) return;
 		switch(m_keyConfig.right) {
 		case ON:
 			rotation = 1;
@@ -136,5 +141,16 @@ public class Ship extends GameEntity {
 	@Override
 	public double getRadius() {
 		return Const.SHIP_RADIUS;
+	}
+	
+	public int getRotation() {
+		return rotation;
+	}
+	
+	@Override
+	public void updateTransformation(EntityTransformation t) {
+		super.updateTransformation(t);
+		rotation = t.rotation;
+		
 	}
 }

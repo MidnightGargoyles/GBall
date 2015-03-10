@@ -26,6 +26,7 @@ import shared.Input.KeyState;
 import shared.StoppableThread;
 
 public class Server extends StoppableThread {
+	public static final int TPS = 25;
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
@@ -47,6 +48,7 @@ public class Server extends StoppableThread {
 	public void run() {
 		World.getInstance().initialize();
 		while (alive.get()) {
+			long start = System.nanoTime();
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
 				handleMsg(data);
@@ -58,13 +60,20 @@ public class Server extends StoppableThread {
 			for(int i = 0; i < clients.size(); i++) {
 				clients.get(i).addMessage(World.getInstance().packageSubframe());
 			}
-			// TODO send messages
-			try {
-				Thread.sleep(1000/20);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			long end = System.nanoTime();
+			long elapsed = end - start;
+			
+			if(TPS - elapsed/1000 > 0) {
+				try {
+					
+					Thread.sleep(TPS - elapsed/1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
+			// TODO send messages
+			
 		}
 		/*
 		 * try { ByteArrayOutputStream baos = new ByteArrayOutputStream();
