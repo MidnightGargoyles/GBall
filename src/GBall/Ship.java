@@ -146,9 +146,6 @@ public class Ship extends GameEntity {
 		return rotation;
 	}
 	
-	//private final Vector2D m_lastPosition0 = new Vector2D();
-	
-	
 	@Override
 	public void updateTransformation(EntityTransformation t) {
 		super.updateTransformation(t);
