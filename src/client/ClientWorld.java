@@ -11,6 +11,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import javax.swing.JOptionPane;
+
 import GBall.Const;
 import GBall.EntityManager;
 import GBall.GameEntity;
@@ -70,6 +72,8 @@ public class ClientWorld implements KeyListener {
 			}
 			if( lastUpdate + TIMEOUT_TIME_MS < System.currentTimeMillis()) {
 				sender.halt();
+				JOptionPane.showMessageDialog(null, "You have been disconnected!");
+				System.exit(1);
 				// TODO add disconnection code here
 			}
 

@@ -20,7 +20,7 @@ public class PacketSender extends StoppableThread {
 	/**
 	 * 0-99
 	 */
-	private static final int LOSS_RATE = 59;
+	private static final int LOSS_RATE = 0;
 
 	private MsgBundle bundle;
 	

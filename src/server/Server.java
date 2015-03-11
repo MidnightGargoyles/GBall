@@ -74,7 +74,9 @@ public class Server extends StoppableThread {
 				handleMsg(data);
 			}
 			
-			for(PacketSender ps : clients) {
+			for(int i = clients.size() - 1; i >= 0; i--) {
+				System.out.println(i);
+				PacketSender ps = clients.get(i);
 				if(lastActivity.get(ps) == null) {
 					lastActivity.put(ps, System.currentTimeMillis());
 				}
@@ -82,6 +84,12 @@ public class Server extends StoppableThread {
 				if( l + TIMEOUT_TIME_MS < System.currentTimeMillis()) {
 					ps.halt();
 					// TODO add disconnection code here
+					clients.remove(i);
+					int id = clientToEntityID.get(ps);
+					freeEntityId.push(id);
+					clientToEntityID.remove(ps);
+					lastActivity.remove(ps);
+					lastTimeStamps.remove(ps.getTargetAddress());
 				}
 			}
 
