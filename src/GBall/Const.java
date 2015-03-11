@@ -54,4 +54,6 @@ public final class Const {
     public final static double	        BALL_MAX_SPEED = 370.0;
     public final static double	        BALL_FRICTION = 0.992;
     public final static Color    	BALL_COLOR = Color.WHITE;
+    
+    public final static double DD_FAULT_TOLERANCE = 10.0;
 }

@@ -90,7 +90,7 @@ public class Client {
 		MsgData d;
 		long start =  System.currentTimeMillis();
 		while ((d = listener.getNextMsg()) == null || d.getType() != MsgData.CONNECTION && listener.isAlive()) {
-			if(start + 5000 < System.currentTimeMillis()) return false;
+			if(start + 15000 < System.currentTimeMillis()) return false;
 		}
 		if(!listener.isAlive()) return false;
 		if(d.getType() == MsgData.CONNECTION) {

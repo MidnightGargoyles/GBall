@@ -52,7 +52,7 @@ public class PacketListner extends StoppableThread {
 	
 	public void run() {
 		while(alive.get()) {
-			byte[] bytes = new byte[2048];
+			byte[] bytes = new byte[4096];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
 			try {
 				socket.receive(packet);

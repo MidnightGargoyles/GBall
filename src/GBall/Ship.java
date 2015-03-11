@@ -74,11 +74,8 @@ public class Ship extends GameEntity {
 				/ (double) 1000;
 		if (rotation != 0) {
 			rotate(rotation * Const.SHIP_ROTATION * delta);
-			scaleSpeed(Const.SHIP_TURN_BRAKE_SCALE);
-		}
-		if (braking) {
-			scaleSpeed(Const.SHIP_BRAKE_SCALE);
-			setAcceleration(0);
+			breakElapsed += delta;
+			//scaleSpeed(Const.SHIP_TURN_BRAKE_SCALE);
 		}
 		super.move();
 	}
@@ -149,19 +146,18 @@ public class Ship extends GameEntity {
 		return rotation;
 	}
 	
-	private final Vector2D m_lastPosition0 = new Vector2D();
-	private final Vector2D m_lastPosition1 = new Vector2D();
+	//private final Vector2D m_lastPosition0 = new Vector2D();
+	
 	
 	@Override
 	public void updateTransformation(EntityTransformation t) {
 		super.updateTransformation(t);
 		rotation = t.rotation;
-		if(m_lastPosition1.minusOperator(m_lastPosition0).length() < t.pos.minusOperator(m_lastPosition1).length() && t.pos.minusOperator(t.dir).length() < t.pos.length()) {
+		if(m_speed.length() > m_lastSpeed.length()) {
 			setAcceleration(Const.SHIP_MAX_ACCELERATION);
 		} else {
 			setAcceleration(0);
 		}
-		m_lastPosition0.set(m_lastPosition1.getX(), m_lastPosition1.getY());
-		m_lastPosition1.set(t.pos.getX(), t.pos.getY());
+		
 	}
 }

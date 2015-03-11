@@ -27,6 +27,7 @@ import shared.StoppableThread;
 
 public class Server extends StoppableThread {
 	public static final int TPS = 25;
+	public static final float SENDS_SECOND = 25f;
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
@@ -56,7 +57,7 @@ public class Server extends StoppableThread {
 			// TODO proccess all incoming
 
 			World.getInstance().process();
-			if(c++ > 40) {
+			if(c++ >= TPS/SENDS_SECOND) {
 				c = 0;
 				for(int i = 0; i < clients.size(); i++) {
 					clients.get(i).addMessage(World.getInstance().packageSubframe());

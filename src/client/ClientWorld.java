@@ -69,6 +69,9 @@ public class ClientWorld implements KeyListener {
 
 			// TODO: Get State /Send input
 			entManager.updatePositions();
+			entManager.checkBorderCollisions(Const.DISPLAY_WIDTH,
+					Const.DISPLAY_HEIGHT);
+			entManager.checkShipCollisions();
 			m_gameWindow.repaint();
 
 			long end = System.nanoTime();
