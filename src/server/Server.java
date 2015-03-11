@@ -45,9 +45,9 @@ public class Server extends StoppableThread {
 
 	public Server() {
 		/* Add the number of free "players" */
-		freeEntityId.push(4);
 		freeEntityId.push(3);
 		freeEntityId.push(2);
+		freeEntityId.push(4);
 		freeEntityId.push(1);
 		
 		try {
