@@ -147,7 +147,6 @@ public class Server extends StoppableThread {
 		}*/
 		for(PacketSender ps : clients) {
 			if(ps.matches(msg.getSource(), msg.getSourcePort())) {
-				System.out.println("REFRESHED");
 				lastActivity.put(ps, System.currentTimeMillis());
 			}
 		}
