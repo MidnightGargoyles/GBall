@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import GBall.EntityManager;
 import GBall.GameEntity;
+import GBall.Vector2D;
 
 public class Subframe extends MsgData {
 	
@@ -17,6 +18,7 @@ public class Subframe extends MsgData {
 	private EntityTransformation entity_2;
 	private EntityTransformation entity_3;
 	private EntityTransformation entity_4;
+	private Vector2D score;
 	
 	
 	public Subframe(EntityManager man) {
@@ -26,6 +28,7 @@ public class Subframe extends MsgData {
 		entity_2 = new EntityTransformation(man.getState().get(2));
 		entity_3 = new EntityTransformation(man.getState().get(3));
 		entity_4 = new EntityTransformation(man.getState().get(4));
+		score = man.getScoreAsVector();
 		/*LinkedList<GameEntity> ge =  man.getState();
 		for(int i = 0; i < 5; i++) {
 			entities[i] = new EntityTransformation(ge.get(i));
@@ -51,5 +54,9 @@ public class Subframe extends MsgData {
 		default:
 			return null;
 		}
+	}
+
+	public Vector2D getScoreAsVector() {
+		return score;
 	}
 }

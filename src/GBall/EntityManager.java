@@ -7,9 +7,11 @@ import java.util.ListIterator;
 
 import shared.Input;
 
+
 public class EntityManager {
 	private LinkedList<GameEntity> m_entities = new LinkedList<GameEntity>();
-
+	private ScoreKeeper scoreKeeper = new ScoreKeeper();
+	
 	public EntityManager() {
 	}
 
@@ -34,6 +36,7 @@ public class EntityManager {
 				.hasNext();) {
 			itr.next().render(g);
 		}
+		scoreKeeper.render(g);
 	}
 
 	public void checkBorderCollisions(int screenWidth, int screenHeight) {
@@ -50,14 +53,14 @@ public class EntityManager {
 				newX = screenWidth - radius - Const.WINDOW_BORDER_WIDTH;
 				e.deflectX();
 				if (e.givesPoints()) {
-					ScoreKeeper.getInstance().changeScores(1, 0);
+					scoreKeeper.changeScores(1, 0);
 					reset = true;
 				}
 			} else if ((newX - e.getRadius()) < Const.WINDOW_BORDER_WIDTH) {
 				newX = radius + Const.WINDOW_BORDER_WIDTH;
 				e.deflectX();
 				if (e.givesPoints()) {
-					ScoreKeeper.getInstance().changeScores(0, 1);
+					scoreKeeper.changeScores(0, 1);
 					reset = true;
 				}
 			}
@@ -147,5 +150,13 @@ public class EntityManager {
 			ge[i] = m_entities.get(i);
 		}
 		return ge;
+	}
+	
+	public Vector2D getScoreAsVector() {
+		return scoreKeeper.getScoreAsVector();
+	}
+	
+	public void setScore(Vector2D v) {
+		scoreKeeper.setScore(v);
 	}
 }

@@ -146,6 +146,8 @@ public class ClientWorld implements KeyListener {
 		for (int i = 0; i < 5; i++) {
 			ge.get(i).updateTransformation(msg.get(i));
 		}
+		
+		entManager.setScore(msg.getScoreAsVector());
 	}
 
 	private boolean newFrame() {

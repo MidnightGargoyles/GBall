@@ -2,14 +2,10 @@ package GBall;
 
 import java.awt.Graphics;
 
-public class ScoreKeeper {
-	private static class ScoreKeeperSingletonHolder {
-		public static final ScoreKeeper instance = new ScoreKeeper();
-	}
+import GBall.Const;
 
-	public static ScoreKeeper getInstance() {
-		return ScoreKeeperSingletonHolder.instance;
-	}
+public class ScoreKeeper {
+
 
 	private int m_team1Score;
 	private int m_team2Score;
@@ -19,7 +15,7 @@ public class ScoreKeeper {
 		m_team2Score += deltaTeam2;
 	}
 
-	private ScoreKeeper() {
+	public ScoreKeeper() {
 		m_team1Score = 0;
 		m_team2Score = 0;
 	}
@@ -35,5 +31,17 @@ public class ScoreKeeper {
 		g.drawString(new Integer(m_team2Score).toString(),
 				(int) Const.TEAM2_SCORE_TEXT_POSITION.getX(),
 				(int) Const.TEAM2_SCORE_TEXT_POSITION.getY());
+	}
+	
+	public Vector2D getScoreAsVector() {
+		Vector2D v = new Vector2D();
+		v.setX(m_team1Score);
+		v.setY(m_team2Score);
+		return v;
+	}
+	
+	public void setScore(Vector2D v) {
+		m_team1Score = (int) v.getX();
+		m_team2Score = (int) v.getY();
 	}
 }
