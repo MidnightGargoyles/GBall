@@ -40,8 +40,8 @@ public class World {
 		entManager = new EntityManager();
 	}
 
-	public void updateInputs(Input input) {
-		keyStates[0].update(input);
+	public void updateInputs(Input input, int id) {
+		keyStates[id - 1].update(input);
 	}
 
 	public void initialize() {

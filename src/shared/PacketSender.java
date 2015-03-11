@@ -49,6 +49,8 @@ public class PacketSender extends StoppableThread {
 			
 			if (msg == null) continue;
 			msg.setSource(socket.getLocalAddress());
+			msg.setSourcePort(socket.getLocalPort());
+			
 			//System.out.println(getName() + " sent: " + msg);
 			//System.out.println(msg.protocol);
 			switch(msg.protocol) {

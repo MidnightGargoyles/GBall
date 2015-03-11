@@ -30,6 +30,7 @@ public class MsgData implements Serializable {
 	protected int type;
 	protected Date index;
 	private InetAddress source = null;
+	private int port = -1;
 	
 	/**
 	 * Constructs a message, defaulting to using the <b>MAYBE</b> protocol.
@@ -87,11 +88,19 @@ public class MsgData implements Serializable {
 		source = addr;
 	}
 	
+	public void setSourcePort(int port) {
+		this.port = port;
+	}
+	
 	/**
 	 * Get the address of the last person to send this message.
 	 * @return InetAddress - the address of the latest sender.
 	 */
 	public InetAddress getSource() {
 		return source;
+	}
+	
+	public int getSourcePort() {
+		return port;
 	}
 }

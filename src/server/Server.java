@@ -10,6 +10,7 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Stack;
 
 import client.Client;
 import shared.ATMMsg;
@@ -32,11 +33,20 @@ public class Server extends StoppableThread {
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
 	private HashMap<InetAddress, Date> lastTimeStamps = new HashMap<InetAddress, Date>();
+	private HashMap<PacketSender, Integer> clientToEntityID = new HashMap<PacketSender, Integer>();
+	private Stack<Integer> freeEntityId = new Stack<Integer>();
+	
 	private Input[] playerInputs = { 
 			new Input(KeyState.OFF), new Input(KeyState.OFF), 
 			new Input(KeyState.OFF), new Input(KeyState.OFF) };
 
 	public Server() {
+		/* Add the number of free "players" */
+		freeEntityId.push(4);
+		freeEntityId.push(3);
+		freeEntityId.push(2);
+		freeEntityId.push(1);
+		
 		try {
 			socket = new DatagramSocket(Client.server_port);
 		} catch (SocketException e) {
@@ -162,19 +172,33 @@ public class Server extends StoppableThread {
 				break;
 			}
 		}
-		if(ps == null) {
+		
+		ConnectionAck c = null;
+		
+		if(ps == null && !freeEntityId.empty()) {
 			ps = new PacketSender(socket, msg.getSourceAddress(),
 					msg.getSourcePort(), "Server_Sender_" + msg.getSourceAddress());
 			clients.add(ps);
+			int id = freeEntityId.pop();
+			clientToEntityID.put(ps,  id);
+			c = new ConnectionAck(msg.id, msg.getSource(), 1337, true);
+		} else {
+			c = new ConnectionAck(msg.id, msg.getSource(), 1335, false);
 		}
-		ConnectionAck c = new ConnectionAck(msg.id, msg.getSource(), 1337, true);
+		
+		//ConnectionAck c = new ConnectionAck(msg.id, msg.getSource(), 1337, true);
 		ps.addMessage(c);
 		
 	}
-	
+
 	private void handleMsg(Input msg) {
 		//System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
-		World.getInstance().updateInputs(msg);
+		PacketSender ps = findPacketSender(msg.getSource(), msg.getSourcePort());
+		if (ps == null) return;
+		
+		int id = clientToEntityID.get(ps);
+		
+		World.getInstance().updateInputs(msg, id);
 	}
 	
 	private void handleMsg(RespondOrder msg) {
@@ -193,5 +217,12 @@ public class Server extends StoppableThread {
 				c.notifyATMResponse(msg);
 			}
 		}
+	}
+	
+	private PacketSender findPacketSender(InetAddress address, int port) {
+		for(PacketSender c : clients) {
+			if (c.matches(address, port)) return c;
+		}
+		return null;
 	}
 }
