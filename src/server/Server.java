@@ -32,12 +32,17 @@ public class Server extends StoppableThread {
 	 * Ticks between each send
 	 */
 	public static final int TPP = 1;
+	
+	//private static final int strikes_til_dead = 20;
+	private static final int TIMEOUT_TIME_MS = 5000;
 	private DatagramSocket socket;
 	private PacketListner listener;
 	private ArrayList<PacketSender> clients = new ArrayList<PacketSender>();
 	private HashMap<InetAddress, Date> lastTimeStamps = new HashMap<InetAddress, Date>();
 	private HashMap<PacketSender, Integer> clientToEntityID = new HashMap<PacketSender, Integer>();
+	private HashMap<PacketSender, Long> lastActivity = new HashMap<PacketSender, Long> ();
 	private Stack<Integer> freeEntityId = new Stack<Integer>();
+	private int c = 0;
 	
 	private Input[] playerInputs = { 
 			new Input(KeyState.OFF), new Input(KeyState.OFF), 
@@ -58,16 +63,27 @@ public class Server extends StoppableThread {
 		listener = new PacketListner(socket, "Server_Listener");
 		start();
 	}
-	private int c = 0;
+	
 	public void run() {
 		World.getInstance().initialize();
 		while (alive.get()) {
+			
 			long start = System.nanoTime();
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
 				handleMsg(data);
 			}
-			// TODO proccess all incoming
+			
+			for(PacketSender ps : clients) {
+				if(lastActivity.get(ps) == null) {
+					lastActivity.put(ps, System.currentTimeMillis());
+				}
+				long l = lastActivity.get(ps);
+				if( l + TIMEOUT_TIME_MS < System.currentTimeMillis()) {
+					ps.halt();
+					// TODO add disconnection code here
+				}
+			}
 
 			World.getInstance().process();
 			if(c++ >= TPP) {
@@ -88,7 +104,6 @@ public class Server extends StoppableThread {
 					continue;
 				}
 			}
-			// TODO send messages
 			
 		}
 		/*
@@ -105,7 +120,7 @@ public class Server extends StoppableThread {
 		 * DatagramPacket pack = new DatagramPacket(buf, buf.length,
 		 * m_serverAddress, SERVERPORT); m_socket.send(pack);
 		 * 
-		 * } catch (IOException e) { // TODO Auto-generated catch block
+		 * } catch (IOException e) {
 		 * e.printStackTrace(); }
 		 */
 	}
@@ -122,6 +137,11 @@ public class Server extends StoppableThread {
 			handleMsg((MsgBundle)msg);
 			return;
 		}*/
+		for(PacketSender ps : clients) {
+			if(ps.matches(msg.getSource(), msg.getSourcePort())) {
+				lastActivity.put(ps, System.currentTimeMillis());
+			}
+		}
 		Date d = lastTimeStamps.get(msg.getSource());
 		if(!msg.greaterThan(d)) return;
 		

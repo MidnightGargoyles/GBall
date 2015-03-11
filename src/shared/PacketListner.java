@@ -5,10 +5,12 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.PortUnreachableException;
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PacketListner extends StoppableThread {
@@ -17,6 +19,7 @@ public class PacketListner extends StoppableThread {
 	private Date latest = null;
 	private DatagramSocket socket;
 	private PacketSender sender = null;
+	private long lastMessage;
 	
 	private static final int DELAY = 0;
 	
@@ -51,6 +54,7 @@ public class PacketListner extends StoppableThread {
 	}
 	
 	public void run() {
+		lastMessage = System.currentTimeMillis();
 		while(alive.get()) {
 			byte[] bytes = new byte[4096];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
@@ -65,9 +69,17 @@ public class PacketListner extends StoppableThread {
 				} else {
 					messageQueue.add(msg);
 				}
-				
+				lastMessage = System.currentTimeMillis();
 			} catch (PortUnreachableException ex) {
 				alive.set(false);
+			} catch (SocketTimeoutException exx) {
+				if(lastMessage + 5000 < System.currentTimeMillis()) {
+					alive.set(false);
+					continue;
+				}
+				if(sender != null) {
+					sender.resendMessages();
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 

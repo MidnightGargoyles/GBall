@@ -20,7 +20,7 @@ public class PacketSender extends StoppableThread {
 	/**
 	 * 0-99
 	 */
-	private static final int LOSS_RATE = 0;
+	private static final int LOSS_RATE = 59;
 
 	private MsgBundle bundle;
 	
@@ -47,30 +47,35 @@ public class PacketSender extends StoppableThread {
 			}
 			MsgData msg = messageQueue.peek();
 			
-			if (msg == null) continue;
-			msg.setSource(socket.getLocalAddress());
-			msg.setSourcePort(socket.getLocalPort());
-			
-			//System.out.println(getName() + " sent: " + msg);
-			//System.out.println(msg.protocol);
-			switch(msg.protocol) {
-			case AT_MOST_ONCE:
-				msg.refreshStamp();
-				empty.release();
-				break;
-			case MAYBE:
-				messageQueue.poll();
-				break;
-			default:
-				System.err.println("Faulty message protocol: " + msg.protocol + " (PacketSender.run())");
-				return;
-			}
-			
-			if(msg.canPack) {
-				bundle.addNext(msg);
-				bundle.refreshStamp();
+			if (msg == null) {
 				msg = bundle;
+				bundle.refreshStamp();
+			} else {
+				msg.setSource(socket.getLocalAddress());
+				msg.setSourcePort(socket.getLocalPort());
+				
+				//System.out.println(getName() + " sent: " + msg);
+				//System.out.println(msg.protocol);
+				switch(msg.protocol) {
+				case AT_MOST_ONCE:
+					msg.refreshStamp();
+					empty.release();
+					break;
+				case MAYBE:
+					messageQueue.poll();
+					break;
+				default:
+					System.err.println("Faulty message protocol: " + msg.protocol + " (PacketSender.run())");
+					return;
+				}
+				
+				if(msg.canPack) {
+					bundle.addNext(msg);
+					bundle.refreshStamp();
+					msg = bundle;
+				}
 			}
+			
 			Random r = new Random();
 			if(r.nextInt(100) > LOSS_RATE) { // imaginary packet loss rate
 				byte[] buf = Util.pack(msg);
@@ -91,8 +96,13 @@ public class PacketSender extends StoppableThread {
 	 * @param msg
 	 */
 	public void addMessage(MsgData msg) {
-		System.out.println(getName() + " added: " + msg);
+		//System.out.println(getName() + " added: " + msg);
 		messageQueue.add(msg);
+		empty.release();
+	}
+	
+	public void resendMessages() {
+		System.out.println(getName() + " RESENDING");
 		empty.release();
 	}
 	

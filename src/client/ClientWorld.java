@@ -26,6 +26,7 @@ import shared.PacketSender;
 import shared.Subframe;
 
 public class ClientWorld implements KeyListener {
+	private static final int TIMEOUT_TIME_MS = 5000;
 	private PacketListner listener;
 	private PacketSender sender;
 	private Input currentInput = new Input();
@@ -42,7 +43,7 @@ public class ClientWorld implements KeyListener {
 
 	private double m_lastTime = System.currentTimeMillis();
 	private double m_actualFps = 0.0;
-
+	private long lastUpdate;
 	private final GameWindow m_gameWindow;
 	private EntityManager entManager;
 
@@ -54,6 +55,7 @@ public class ClientWorld implements KeyListener {
 
 	public void process() {
 		initPlayers();
+		lastUpdate = System.currentTimeMillis();
 		while (true) {
 			long start = System.nanoTime();
 			// Only add changes to the message queue
@@ -66,8 +68,11 @@ public class ClientWorld implements KeyListener {
 			while ((data = listener.getNextMsg()) != null) {
 				handleMsg(data);
 			}
+			if( lastUpdate + TIMEOUT_TIME_MS < System.currentTimeMillis()) {
+				sender.halt();
+				// TODO add disconnection code here
+			}
 
-			// TODO: Get State /Send input
 			entManager.updatePositions();
 			entManager.checkBorderCollisions(Const.DISPLAY_WIDTH,
 					Const.DISPLAY_HEIGHT);
@@ -82,7 +87,6 @@ public class ClientWorld implements KeyListener {
 
 					Thread.sleep(1000/60 - elapsed / 1000); // 40 tps
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -93,6 +97,7 @@ public class ClientWorld implements KeyListener {
 	private void handleMsg(MsgData msg) {
 		if (msg == null)
 			return;
+		lastUpdate = System.currentTimeMillis();
 		Date d = lastTimeStamps.get(msg.getSource());
 		if (!msg.greaterThan(d))
 			return;
