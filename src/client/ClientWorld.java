@@ -69,7 +69,7 @@ public class ClientWorld implements KeyListener {
 			}
 			currentInput = new Input();
 			
-			if(lastSentMessage + 200 < System.currentTimeMillis()) {
+			if(lastSentMessage + 100 < System.currentTimeMillis()) {
 				sender.resendMessages();
 				lastSentMessage = System.currentTimeMillis();
 			}
