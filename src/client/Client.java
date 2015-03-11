@@ -48,7 +48,6 @@ public class Client {
 			listener = new PacketListner(socket, "Client_Listener");
 			listener.setSender(sender);
 			socket.connect(address, server_port);
-			socket.setSoTimeout(100);
 		} catch (UnknownHostException e) {
 			System.out.println("");
 			e.printStackTrace();

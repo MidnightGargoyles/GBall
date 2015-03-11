@@ -50,6 +50,8 @@ public class PacketSender extends StoppableThread {
 			if (msg == null) {
 				msg = bundle;
 				bundle.refreshStamp();
+				msg.setSource(socket.getLocalAddress());
+				msg.setSourcePort(socket.getLocalPort());
 			} else {
 				msg.setSource(socket.getLocalAddress());
 				msg.setSourcePort(socket.getLocalPort());
@@ -77,7 +79,7 @@ public class PacketSender extends StoppableThread {
 			}
 			
 			Random r = new Random();
-			if(r.nextInt(100) > LOSS_RATE) { // imaginary packet loss rate
+			if(r.nextInt(100)+1 > LOSS_RATE) { // imaginary packet loss rate
 				byte[] buf = Util.pack(msg);
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, port);
 				
@@ -99,10 +101,10 @@ public class PacketSender extends StoppableThread {
 		//System.out.println(getName() + " added: " + msg);
 		messageQueue.add(msg);
 		empty.release();
+		
 	}
 	
 	public void resendMessages() {
-		System.out.println(getName() + " RESENDING");
 		empty.release();
 	}
 	

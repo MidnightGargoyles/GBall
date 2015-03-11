@@ -46,6 +46,7 @@ public class ClientWorld implements KeyListener {
 	private double m_lastTime = System.currentTimeMillis();
 	private double m_actualFps = 0.0;
 	private long lastUpdate;
+	private long lastSentMessage;
 	private final GameWindow m_gameWindow;
 	private EntityManager entManager;
 
@@ -58,14 +59,22 @@ public class ClientWorld implements KeyListener {
 	public void process() {
 		initPlayers();
 		lastUpdate = System.currentTimeMillis();
+		lastSentMessage = System.currentTimeMillis();
 		while (true) {
 			long start = System.nanoTime();
 			// Only add changes to the message queue
 			if (lastInput.update(currentInput)) {
 				sender.addMessage(currentInput);
+				lastSentMessage = System.currentTimeMillis();
 			}
 			currentInput = new Input();
-
+			
+			if(lastSentMessage + 200 < System.currentTimeMillis()) {
+				System.out.println("CLIENT RESENDING");
+				sender.resendMessages();
+				lastSentMessage = System.currentTimeMillis();
+			}
+			
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
 				handleMsg(data);
@@ -101,6 +110,7 @@ public class ClientWorld implements KeyListener {
 	private void handleMsg(MsgData msg) {
 		if (msg == null)
 			return;
+		System.out.println("CLIENT REFRESHED");
 		lastUpdate = System.currentTimeMillis();
 		Date d = lastTimeStamps.get(msg.getSource());
 		if (!msg.greaterThan(d))

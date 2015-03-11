@@ -31,7 +31,7 @@ public class Server extends StoppableThread {
 	/**
 	 * Ticks between each send
 	 */
-	public static final int TPP = 1;
+	public static final int TPP = 2;
 	
 	//private static final int strikes_til_dead = 20;
 	private static final int TIMEOUT_TIME_MS = 5000;
@@ -75,7 +75,7 @@ public class Server extends StoppableThread {
 			}
 			
 			for(int i = clients.size() - 1; i >= 0; i--) {
-				System.out.println(i);
+				//System.out.println(i);
 				PacketSender ps = clients.get(i);
 				if(lastActivity.get(ps) == null) {
 					lastActivity.put(ps, System.currentTimeMillis());
@@ -147,6 +147,7 @@ public class Server extends StoppableThread {
 		}*/
 		for(PacketSender ps : clients) {
 			if(ps.matches(msg.getSource(), msg.getSourcePort())) {
+				System.out.println("REFRESHED");
 				lastActivity.put(ps, System.currentTimeMillis());
 			}
 		}

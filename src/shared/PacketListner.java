@@ -19,7 +19,7 @@ public class PacketListner extends StoppableThread {
 	private Date latest = null;
 	private DatagramSocket socket;
 	private PacketSender sender = null;
-	private long lastMessage;
+	
 	
 	private static final int DELAY = 0;
 	
@@ -54,7 +54,6 @@ public class PacketListner extends StoppableThread {
 	}
 	
 	public void run() {
-		lastMessage = System.currentTimeMillis();
 		while(alive.get()) {
 			byte[] bytes = new byte[4096];
 			DatagramPacket packet = new DatagramPacket(bytes, bytes.length);
@@ -69,17 +68,8 @@ public class PacketListner extends StoppableThread {
 				} else {
 					messageQueue.add(msg);
 				}
-				lastMessage = System.currentTimeMillis();
 			} catch (PortUnreachableException ex) {
 				alive.set(false);
-			} catch (SocketTimeoutException exx) {
-				if(lastMessage + 5000 < System.currentTimeMillis()) {
-					alive.set(false);
-					continue;
-				}
-				if(sender != null) {
-					sender.resendMessages();
-				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			} 
