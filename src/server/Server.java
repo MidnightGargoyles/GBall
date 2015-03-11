@@ -224,6 +224,8 @@ public class Server extends StoppableThread {
 
 	private void handleMsg(Input msg) {
 		//System.out.println("forward: " + msg.forward + " " + msg.getTimestamp().getTime());
+		//System.out.println("left: " + msg.left + " " + msg.getTimestamp().getTime());
+		//System.out.println("right: " + msg.right + " " + msg.getTimestamp().getTime());
 		PacketSender ps = findPacketSender(msg.getSource(), msg.getSourcePort());
 		if (ps == null) return;
 		

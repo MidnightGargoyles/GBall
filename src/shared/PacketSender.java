@@ -30,6 +30,7 @@ public class PacketSender extends StoppableThread {
 		this.port = port;
 		this.bundle = new MsgBundle();
 		this.bundle.setSource(address);
+		this.bundle.setSourcePort(port);
 		start();
 	}
 	
@@ -47,11 +48,9 @@ public class PacketSender extends StoppableThread {
 			}
 			MsgData msg = messageQueue.peek();
 			
-			if (msg == null) {
-				msg = bundle;
+			if (msg == null) { // just resend old
 				bundle.refreshStamp();
-				msg.setSource(socket.getLocalAddress());
-				msg.setSourcePort(socket.getLocalPort());
+				msg = bundle;
 			} else {
 				msg.setSource(socket.getLocalAddress());
 				msg.setSourcePort(socket.getLocalPort());
