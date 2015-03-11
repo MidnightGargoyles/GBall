@@ -70,7 +70,6 @@ public class ClientWorld implements KeyListener {
 			currentInput = new Input();
 			
 			if(lastSentMessage + 200 < System.currentTimeMillis()) {
-				System.out.println("CLIENT RESENDING");
 				sender.resendMessages();
 				lastSentMessage = System.currentTimeMillis();
 			}
@@ -110,7 +109,6 @@ public class ClientWorld implements KeyListener {
 	private void handleMsg(MsgData msg) {
 		if (msg == null)
 			return;
-		System.out.println("CLIENT REFRESHED");
 		lastUpdate = System.currentTimeMillis();
 		Date d = lastTimeStamps.get(msg.getSource());
 		if (!msg.greaterThan(d))
