@@ -27,11 +27,12 @@ import shared.Input.KeyState;
 import shared.StoppableThread;
 
 public class Server extends StoppableThread {
-	public static final int TPS = 25;
+	public static final int TPS = 50;
+	private static final int MILLIS_PER_FRAME = 1000/TPS;
 	/**
 	 * Ticks between each send
 	 */
-	public static int TPP = 2;
+	public static int TPP = 1;
 	
 	//private static final int strikes_til_dead = 20;
 	private static final int TIMEOUT_TIME_MS = 5000;
@@ -63,12 +64,13 @@ public class Server extends StoppableThread {
 		listener = new PacketListner(socket, "Server_Listener");
 		start();
 	}
-	
+	long t = 0;
 	public void run() {
+		t = System.currentTimeMillis();
 		World.getInstance().initialize();
 		while (alive.get()) {
 			
-			long start = System.nanoTime();
+			long start = System.currentTimeMillis();
 			MsgData data;
 			while ((data = listener.getNextMsg()) != null) {
 				handleMsg(data);
@@ -94,21 +96,25 @@ public class Server extends StoppableThread {
 			}
 
 			World.getInstance().process();
-			if(c++ >= TPP) {
+			if(c++ > TPP) {
 				c = 0;
+				//System.out.println(System.currentTimeMillis() - t);
+				///System.out.println(TPP);
+				t = System.currentTimeMillis();
 				for(int i = 0; i < clients.size(); i++) {
 					clients.get(i).addMessage(World.getInstance().packageSubframe());
 				}
 			}
 			
-			long end = System.nanoTime();
+			long end = System.currentTimeMillis();
 			long elapsed = end - start;
-			
-			if(TPS - elapsed/1000 > 0) {
+			//System.out.println(elapsed);
+			if(MILLIS_PER_FRAME - elapsed > 0) {
 				try {
 					
-					Thread.sleep(TPS - elapsed/1000);
+					Thread.sleep(MILLIS_PER_FRAME - elapsed);
 				} catch (InterruptedException e) {
+					System.out.println("huh?");
 					continue;
 				}
 			}

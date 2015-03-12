@@ -63,9 +63,9 @@ public class StartupDialog extends JDialog {
 		
 		
 		
-		final JLabel latencyVal = new JLabel("0ms   ");
-		final JLabel pLossVal = new JLabel("0%    ");
-		final JLabel tppVal = new JLabel("2    ");
+		final JLabel latencyVal = new JLabel(PacketListner.DELAY + "ms");
+		final JLabel pLossVal = new JLabel(PacketSender.LOSS_RATE + "%");
+		final JLabel tppVal = new JLabel((Server.TPS / Server.TPP) + "sec");
 		
 		latencyField = new JSlider(0, 1000, PacketListner.DELAY);
 		latencyField.addChangeListener(new ChangeListener() {
@@ -88,7 +88,34 @@ public class StartupDialog extends JDialog {
 			
 			@Override
 			public void stateChanged(ChangeEvent e) {
-				tppVal.setText(tppField.getValue() + "");
+				int v = Server.TPS / tppField.getValue();
+				if(v < 1) {
+					float v2 = (float)Server.TPS / (float)tppField.getValue();
+					String div;
+					switch((int)(v2*8)) {
+					case 8:
+						div = "1";
+						break;
+					case 7:
+						div = "7/8";
+						break;
+						//div = 8;
+					case 6:
+						div = "3/4";
+						break;
+					case 5:
+						div = "5/8";
+						break;
+					case 4:
+					default:
+						div = "1/2";
+					}
+					tppVal.setText(div + "sec");
+				} else {
+					tppVal.setText(v + "sec");
+				}
+				
+				
 			}
 		});
 		titlePane.add(new JLabel("latency:"));
