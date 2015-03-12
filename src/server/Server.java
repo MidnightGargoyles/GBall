@@ -147,8 +147,20 @@ public class Server extends StoppableThread {
 		}*/
 		
 		Date d = lastTimeStamps.get(msg.getSource());
+		/*if(msg.getType() == MsgData.INPUT) {
+			System.out.println(msg.getTimestamp().getTime() + " > " + d.getTime());
+		}
+		if(msg.getType() == MsgData.INPUT) {
+			System.out.println("_f: " + ((Input)msg).forward);
+			System.out.println("_r: " + ((Input)msg).forward);
+			System.out.println("_l: " + ((Input)msg).forward);
+		}*/
 		if(!msg.greaterThan(d)) return;
-		
+		/*if(msg.getType() == MsgData.INPUT) {
+			System.out.println("f: " + ((Input)msg).forward);
+			System.out.println("r: " + ((Input)msg).forward);
+			System.out.println("l: " + ((Input)msg).forward);
+		}*/
 		for(PacketSender ps : clients) {
 			if(ps.matches(msg.getSource(), msg.getSourcePort())) {
 				lastActivity.put(ps, System.currentTimeMillis());

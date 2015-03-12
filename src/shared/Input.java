@@ -56,11 +56,24 @@ public class Input extends MsgData {
 	 * @param newState
 	 */
 	public boolean update(Input newState) {
-		boolean b = hasChanges(newState);
+		KeyState f = forward;
+		//System.out.println("EQ: " + (f == forward) + " or " + (f.equals(forward)));
 		forward = (newState.forward == KeyState.NO_CHANGE) ? forward : newState.forward;
+		KeyState l = left;
 		left = (newState.left == KeyState.NO_CHANGE) ? left : newState.left;
+		KeyState r = right;
 		right = (newState.right == KeyState.NO_CHANGE) ? right : newState.right;
-		return b;
+		//System.out.println(!(forward.equals(f) && left.equals(l) && right.equals(r)));
+		return !(forward.equals(f) && left.equals(l) && right.equals(r));
+	}
+	/**
+	 * updates this object, replacing the states with a mix
+	 * of the old and new states.
+	 * @param oldState
+	 * @param newState
+	 */
+	public void absUpdate(Input newState) {
+		
 	}
 
 	/**

@@ -21,6 +21,7 @@ import GBall.KeyConfig;
 import GBall.Vector2D;
 import shared.Connection;
 import shared.Input;
+import shared.Input.KeyState;
 import shared.MsgBundle;
 import shared.MsgData;
 import shared.PacketListner;
@@ -31,8 +32,15 @@ public class ClientWorld implements KeyListener {
 	private static final int TIMEOUT_TIME_MS = 5000;
 	private PacketListner listener;
 	private PacketSender sender;
+	/**
+	 * Contains the current changes in input.
+	 */
 	private Input currentInput = new Input();
-	private Input lastInput = new Input();
+	/**
+	 * Contains the absolute state of all inputs (ON or OFF).
+	 * Should be the one used for sending.
+	 */
+	private final Input absInput = new Input(KeyState.OFF);
 	private HashMap<InetAddress, Date> lastTimeStamps = new HashMap<InetAddress, Date>();
 
 	private static class WorldSingletonHolder {
@@ -63,14 +71,20 @@ public class ClientWorld implements KeyListener {
 		while (true) {
 			long start = System.nanoTime();
 			// Only add changes to the message queue
-			if (lastInput.update(currentInput)) {
-				sender.addMessage(currentInput);
+			if (absInput.update(currentInput)) {
+				absInput.refreshStamp();
+				sender.addMessage(absInput);
+				//System.out.println("F: " + absInput.forward);
+				//System.out.println("L: " + absInput.left);
+				//System.out.println("R: " + absInput.right);
 				lastSentMessage = System.currentTimeMillis();
 			}
 			currentInput = new Input();
 			
 			if(lastSentMessage + 100 < System.currentTimeMillis()) {
-				sender.resendMessages();
+				//sender.resendMessages();
+				absInput.refreshStamp();
+				sender.addMessage(absInput);
 				lastSentMessage = System.currentTimeMillis();
 			}
 			
@@ -80,7 +94,7 @@ public class ClientWorld implements KeyListener {
 			}
 			if( lastUpdate + TIMEOUT_TIME_MS < System.currentTimeMillis()) {
 				sender.halt();
-				JOptionPane.showMessageDialog(null, "You have been disconnected!");
+				JOptionPane.showMessageDialog(m_gameWindow, "You have been disconnected!");
 				System.exit(1);
 				// TODO add disconnection code here
 			}

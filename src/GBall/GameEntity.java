@@ -47,7 +47,6 @@ public abstract class GameEntity implements Serializable {
 		m_initialPosition = new Vector2D(position.getX(), position.getY());
 		m_initialDirection = new Vector2D(direction.getX(), direction.getY());
 		this.id = id;
-		System.out.println(toString() + " :> " + id);
 	}
 
 	public void setAcceleration(double a) {
