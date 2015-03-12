@@ -63,9 +63,14 @@ public class Client {
 			StartupDialog.Result result = StartupDialog.showDialog();
 			switch(result.type) {
 			case StartupDialog.Result.CONNECT:
-				c = new Client(result.value);
+				PacketListner.DELAY = result.latency;
+				PacketSender.LOSS_RATE = result.packetLossRate;
+				c = new Client(result.ip);
 				break;
 			case StartupDialog.Result.HOST:
+				PacketListner.DELAY = result.latency;
+				PacketSender.LOSS_RATE = result.packetLossRate;
+				Server.TPP = result.TPP;
 				c = new Client();
 				break;
 			case StartupDialog.Result.EXIT:

@@ -31,7 +31,7 @@ public class Server extends StoppableThread {
 	/**
 	 * Ticks between each send
 	 */
-	public static final int TPP = 2;
+	public static int TPP = 2;
 	
 	//private static final int strikes_til_dead = 20;
 	private static final int TIMEOUT_TIME_MS = 5000;

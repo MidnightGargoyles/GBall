@@ -21,7 +21,7 @@ public class PacketListner extends StoppableThread {
 	private PacketSender sender = null;
 	
 	
-	private static final int DELAY = 0;
+	public static int DELAY = 0;
 	
 	/**
 	 * Used for at most once protocol

@@ -1,42 +1,122 @@
 package client;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSlider;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import server.Server;
+import shared.PacketListner;
+import shared.PacketSender;
 
 public class StartupDialog extends JDialog {
-	private JTextField field;
-	
+	private JTextField ipField;
+	private JSlider latencyField;
+	private JSlider packetLossField;
+	private JSlider tppField;
 	public class Result {
 		public static final int CONNECT = 0;
 		public static final int HOST = 1;
 		public static final int EXIT = 2;
 		public int type;
-		public String value;
+		public String ip;
+		public int latency = 0;
+		public int packetLossRate = 0;
+		public int TPP = 2;
+		
 	}
 	private Result result = null;
 	private StartupDialog(String title) {
 		super((JFrame) null, title, true);
+		getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
 
 		/*
 		 * JPanel messagePane = new JPanel(); messagePane.add(new
 		 * JLabel(message)); getContentPane().add(messagePane, 0);
 		 */
 
+		JPanel optionsPane = new JPanel();
+		optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.X_AXIS));
+		
+		JPanel titlePane = new JPanel();
+		titlePane.setLayout(new BoxLayout(titlePane, BoxLayout.Y_AXIS));
+		
+		JPanel sliderPane = new JPanel();
+		sliderPane.setLayout(new BoxLayout(sliderPane, BoxLayout.Y_AXIS));
+		
+		JPanel valuePane = new JPanel();
+		valuePane.setLayout(new BoxLayout(valuePane, BoxLayout.Y_AXIS));
+		
+		
+		
+		final JLabel latencyVal = new JLabel("0ms   ");
+		final JLabel pLossVal = new JLabel("0%    ");
+		final JLabel tppVal = new JLabel("2    ");
+		
+		latencyField = new JSlider(0, 1000, PacketListner.DELAY);
+		latencyField.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				latencyVal.setText(latencyField.getValue() + "ms");
+			}
+		});
+		packetLossField = new JSlider(0, 100, PacketSender.LOSS_RATE);
+		packetLossField.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				pLossVal.setText(packetLossField.getValue() + "%");
+			}
+		});
+		tppField = new JSlider(1, 50, Server.TPP);
+		tppField.addChangeListener(new ChangeListener() {
+			
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				tppVal.setText(tppField.getValue() + "");
+			}
+		});
+		titlePane.add(new JLabel("latency:"));
+		titlePane.add(new JLabel("packet loss rate:"));
+		titlePane.add(new JLabel("server ticks per packet:"));
+		
+		sliderPane.add(latencyField);
+		sliderPane.add(packetLossField);
+		sliderPane.add(tppField);
+		
+		valuePane.add(latencyVal);
+		valuePane.add(pLossVal);
+		valuePane.add(tppVal);
+		
+		optionsPane.add(titlePane);
+		optionsPane.add(sliderPane);
+		optionsPane.add(valuePane);
+		getContentPane().add(optionsPane);
+		
+		
+		
 		JPanel portInputPane = new JPanel();
-		field = new JTextField(16);
+		ipField = new JTextField(16);
 		portInputPane.add(new JLabel("IP:"));
-		portInputPane.add(field);
-
+		portInputPane.add(ipField);
+		portInputPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		getContentPane().add(portInputPane);
-
+		
 		JPanel buttonPane = new JPanel();
 
 		JButton button = new JButton("Join");
@@ -46,7 +126,9 @@ public class StartupDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				result = new Result();
 				result.type = Result.CONNECT;
-				result.value = field.getText();
+				result.ip = ipField.getText();
+				result.latency = latencyField.getValue();
+				result.packetLossRate = packetLossField.getValue();
 				dispose();
 			}
 		});
@@ -59,6 +141,9 @@ public class StartupDialog extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				result = new Result();
 				result.type = Result.HOST;
+				result.latency = latencyField.getValue();
+				result.packetLossRate = packetLossField.getValue();
+				result.TPP = tppField.getValue();
 				dispose();
 			}
 		});
@@ -75,12 +160,13 @@ public class StartupDialog extends JDialog {
 			}
 		});
 		buttonPane.add(button3);
-
-		getContentPane().add(buttonPane, BorderLayout.SOUTH);
+		buttonPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+		getContentPane().add(buttonPane);
+		//setMinimumSize(new Dimension(100, 800));
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		pack();
-
+		setLocationRelativeTo(null);
 		setVisible(true);
 	}
 	
