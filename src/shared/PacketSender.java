@@ -22,15 +22,14 @@ public class PacketSender extends StoppableThread {
 	 */
 	private static final int LOSS_RATE = 0;
 
-	private MsgBundle bundle;
+	private final MsgBundle bundle;
 	
 	public PacketSender(DatagramSocket socket, InetAddress address, int port) {
 		this.socket = socket;
 		this.address = address;
 		this.port = port;
 		this.bundle = new MsgBundle();
-		this.bundle.setSource(address);
-		this.bundle.setSourcePort(port);
+		
 		start();
 	}
 	
@@ -50,6 +49,8 @@ public class PacketSender extends StoppableThread {
 			
 			if (msg == null) { // just resend old
 				bundle.refreshStamp();
+				this.bundle.setSource(socket.getLocalAddress());
+				this.bundle.setSourcePort(socket.getLocalPort());
 				msg = bundle;
 			} else {
 				msg.setSource(socket.getLocalAddress());

@@ -145,13 +145,15 @@ public class Server extends StoppableThread {
 			handleMsg((MsgBundle)msg);
 			return;
 		}*/
+		
+		Date d = lastTimeStamps.get(msg.getSource());
+		if(!msg.greaterThan(d)) return;
+		
 		for(PacketSender ps : clients) {
 			if(ps.matches(msg.getSource(), msg.getSourcePort())) {
 				lastActivity.put(ps, System.currentTimeMillis());
 			}
 		}
-		Date d = lastTimeStamps.get(msg.getSource());
-		if(!msg.greaterThan(d)) return;
 		
 		switch (msg.getType()) {
 		case MsgData.CONNECTION:
