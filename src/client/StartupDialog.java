@@ -83,7 +83,7 @@ public class StartupDialog extends JDialog {
 				pLossVal.setText(packetLossField.getValue() + "%");
 			}
 		});
-		tppField = new JSlider(1, 50, Server.TPP);
+		tppField = new JSlider(1, 100, Server.TPP);
 		tppField.addChangeListener(new ChangeListener() {
 			
 			@Override
