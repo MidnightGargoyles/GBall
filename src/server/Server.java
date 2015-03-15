@@ -96,7 +96,7 @@ public class Server extends StoppableThread {
 			}
 
 			World.getInstance().process();
-			if(c++ > TPP) {
+			if(c++ >= TPP) {
 				c = 0;
 				//System.out.println(System.currentTimeMillis() - t);
 				///System.out.println(TPP);
